@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Maa Engineering Limited — structural steel, pre-engineered buildings, metal fabrication, roofing, trusses and concrete mixer machines in Ghana.">
+  <title>Maa Engineering Limited | Redefining Steel Works</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --ink: #111315;
+      --muted: #667078;
+      --steel: #8f989f;
+      --light: #f4f5f4;
+      --line: #dde1e3;
+      --white: #fff;
+      --accent: #c89b55;
+      --max: 1240px
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      color: var(--ink);
+      background: #fff;
+      line-height: 1.6
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: Manrope, sans-serif;
+      line-height: 1.08
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .container {
+      width: min(var(--max), calc(100% - 48px));
+      margin: auto
+    }
+
+    .top {
+      background: #0b0d0e;
+      color: #cfd4d6;
+      font-size: 13px;
+      padding: 9px 0
+    }
+
+    .top .container {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px
+    }
+
+    header {
+      position: absolute;
+      top: 35px;
+      left: 0;
+      width: 100%;
+      z-index: 20;
+      color: #fff
+    }
+
+    nav {
+      height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: Manrope;
+      font-weight: 800;
+      letter-spacing: .06em
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(255, 255, 255, .5);
+      display: grid;
+      place-items: center;
+      position: relative
+    }
+
+    .mark:before,
+    .mark:after {
+      content: "";
+      position: absolute;
+      background: #fff
+    }
+
+    .mark:before {
+      width: 20px;
+      height: 2px;
+      transform: rotate(-45deg)
+    }
+
+    .mark:after {
+      width: 20px;
+      height: 2px;
+      transform: rotate(45deg)
+    }
+
+    .brand small {
+      display: block;
+      font-size: 8px;
+      letter-spacing: .18em;
+      color: #c4c8ca;
+      margin-top: 2px
+    }
+
+    .links {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600
+    }
+
+    .links a {
+      opacity: .9
+    }
+
+    .links a:hover {
+      color: #fff;
+      opacity: 1
+    }
+
+    .nav-cta {
+      border: 1px solid rgba(255, 255, 255, .45);
+      padding: 11px 18px
+    }
+
+    .menu {
+      display: none;
+      background: none;
+      border: 0;
+      color: white;
+      font-size: 28px
+    }
+
+    .hero {
+      min-height: 760px;
+      background: linear-gradient(90deg, rgba(8, 10, 11, .9), rgba(8, 10, 11, .55), rgba(8, 10, 11, .28)), url("https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=2200&q=85") center/cover;
+      display: flex;
+      align-items: center;
+      color: white;
+      padding: 150px 0 90px
+    }
+
+    .hero-copy {
+      max-width: 800px
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .25em;
+      color: #d2d7d9;
+      font-weight: 700;
+      margin-bottom: 22px
+    }
+
+    .hero h1 {
+      font-size: clamp(48px, 7vw, 88px);
+      letter-spacing: -.05em;
+      margin-bottom: 26px
+    }
+
+    .hero h1 span {
+      color: #d1d5d6
+    }
+
+    .hero p {
+      font-size: 19px;
+      color: #d8dcde;
+      max-width: 650px;
+      margin-bottom: 36px
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 22px;
+      font-weight: 700;
+      font-size: 14px;
+      border: 1px solid white
+    }
+
+    .btn.primary {
+      background: #fff;
+      color: #111;
+      border-color: #fff
+    }
+
+    .btn.ghost {
+      border-color: rgba(255, 255, 255, .45)
+    }
+
+    .hero-meta {
+      margin-top: 70px;
+      display: flex;
+      gap: 55px;
+      border-top: 1px solid rgba(255, 255, 255, .22);
+      padding-top: 24px
+    }
+
+    .hero-meta strong {
+      font-family: Manrope;
+      font-size: 23px
+    }
+
+    .hero-meta span {
+      display: block;
+      color: #aeb5b8;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .12em
+    }
+
+    section {
+      padding: 110px 0
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 50px;
+      align-items: end;
+      margin-bottom: 55px
+    }
+
+    .kicker {
+      color: #9a7440;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 14px
+    }
+
+    .section-head h2 {
+      font-size: clamp(34px, 4.5vw, 58px);
+      letter-spacing: -.045em;
+      max-width: 700px
+    }
+
+    .section-head p {
+      max-width: 460px;
+      color: var(--muted)
+    }
+
+    .about {
+      background: var(--light)
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 80px;
+      align-items: center
+    }
+
+    .about-image {
+      height: 600px;
+      position: relative
+    }
+
+    .about-image:after {
+      content: "";
+      position: absolute;
+      inset: 18px -18px -18px 18px;
+      border: 1px solid #c7cccf;
+      z-index: 0
+    }
+
+    .about-image img {
+      position: relative;
+      z-index: 1
+    }
+
+    .about-copy p {
+      color: var(--muted);
+      font-size: 17px;
+      margin: 20px 0
+    }
+
+    .list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 28px
+    }
+
+    .list div {
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      font-weight: 700;
+      font-size: 14px
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line)
+    }
+
+    .service {
+      background: #fff;
+      padding: 34px 28px;
+      min-height: 310px;
+      transition: .25s
+    }
+
+    .service:hover {
+      background: #111;
+      color: white;
+      transform: translateY(-5px)
+    }
+
+    .num {
+      font-family: Manrope;
+      color: #9a7440;
+      font-weight: 800;
+      font-size: 12px
+    }
+
+    .service h3 {
+      font-size: 25px;
+      margin: 60px 0 15px
+    }
+
+    .service p {
+      color: var(--muted);
+      font-size: 14px
+    }
+
+    .service:hover p {
+      color: #bdc3c6
+    }
+
+    .stats {
+      background: #111315;
+      color: white
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 30px
+    }
+
+    .stat {
+      border-left: 1px solid #3b4043;
+      padding-left: 25px
+    }
+
+    .stat strong {
+      font-size: 45px;
+      font-family: Manrope;
+      display: block
+    }
+
+    .stat span {
+      color: #aeb5b8;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .12em
+    }
+
+    .why {
+      background: #f7f7f6
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--line)
+    }
+
+    .why-item {
+      padding: 28px 10px 28px 0;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 55px 1fr;
+      gap: 15px
+    }
+
+    .why-item b {
+      font-family: Manrope;
+      font-size: 12px;
+      color: #9a7440
+    }
+
+    .why-item h3 {
+      font-size: 20px;
+      margin-bottom: 7px
+    }
+
+    .why-item p {
+      color: var(--muted);
+      font-size: 14px
+    }
+
+    .projects {
+      background: #111315;
+      color: #fff
+    }
+
+    .projects .section-head p {
+      color: #aeb5b8
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap: 14px
+    }
+
+    .project {
+      position: relative;
+      height: 560px;
+      overflow: hidden
+    }
+
+    .project.small {
+      height: 273px
+    }
+
+    .project-stack {
+      display: grid;
+      gap: 14px
+    }
+
+    .project:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(0, 0, 0, .7), transparent 55%)
+    }
+
+    .project .label {
+      position: absolute;
+      z-index: 2;
+      left: 25px;
+      bottom: 22px
+    }
+
+    .label small {
+      color: #d0d4d6;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      font-size: 10px
+    }
+
+    .label h3 {
+      font-size: 24px;
+      margin-top: 5px
+    }
+
+    .leadership-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px
+    }
+
+    .person {
+      border: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 220px 1fr
+    }
+
+    .person-photo {
+      height: 330px;
+      background: #e4e6e6;
+      display: grid;
+      place-items: center;
+      color: #7c8387;
+      font-size: 12px;
+      text-align: center;
+      padding: 20px
+    }
+
+    .person-body {
+      padding: 30px
+    }
+
+    .person-body .role {
+      color: #9a7440;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: .15em;
+      font-weight: 800
+    }
+
+    .person-body h3 {
+      font-size: 27px;
+      margin: 8px 0 16px
+    }
+
+    .person-body p {
+      color: var(--muted);
+      font-size: 14px
+    }
+
+    .cta {
+      padding: 90px 0;
+      background: #d8dde0
+    }
+
+    .cta-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 30px
+    }
+
+    .cta h2 {
+      font-size: clamp(34px, 5vw, 65px);
+      max-width: 760px
+    }
+
+    .dark-btn {
+      background: #111315;
+      color: #fff;
+      border: 1px solid #111315;
+      padding: 15px 23px;
+      font-weight: 700;
+      white-space: nowrap
+    }
+
+    .contact {
+      background: #f5f6f5
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px
+    }
+
+    .contact-info p {
+      color: var(--muted);
+      margin: 15px 0 30px
+    }
+
+    .contact-lines {
+      display: grid;
+      gap: 18px
+    }
+
+    .contact-line small {
+      display: block;
+      color: #8b9296;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      font-size: 10px;
+      font-weight: 800
+    }
+
+    .contact-line strong {
+      font-family: Manrope;
+      font-size: 17px
+    }
+
+    .form {
+      background: white;
+      border: 1px solid var(--line);
+      padding: 34px
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    .form input,
+    .form textarea,
+    .form select {
+      width: 100%;
+      border: 1px solid var(--line);
+      padding: 14px;
+      background: #fff;
+      font: inherit
+    }
+
+    .form textarea {
+      height: 135px;
+      resize: vertical
+    }
+
+    .full {
+      grid-column: 1/-1
+    }
+
+    .submit {
+      background: #111315;
+      color: white;
+      border: 0;
+      padding: 15px 22px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .submit:hover {
+      background: #333;
+    }
+
+    footer {
+      background: #0b0d0e;
+      color: #aeb5b8;
+      padding: 50px 0 25px
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+      padding-bottom: 45px
+    }
+
+    .footer-brand {
+      color: white
+    }
+
+    .footer-top p {
+      max-width: 420px;
+      margin-top: 15px;
+      font-size: 14px
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+      font-size: 13px
+    }
+
+    .copyright {
+      border-top: 1px solid #292d2f;
+      padding-top: 22px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(25px);
+      transition: .7s
+    }
+
+    .reveal.show {
+      opacity: 1;
+      transform: none
+    }
+
+    /* Mobile menu navigation style overrides */
+    .links.mobile {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 82px;
+      left: 0;
+      width: 100%;
+      background: #0b0d0e;
+      padding: 20px;
+      border-top: 1px solid #292d2f;
+      box-shadow: 0 10px 15px rgba(0,0,0,0.5);
+    }
+
+    @media(max-width:900px) {
+      .links {
+        display: none
+      }
+
+      .menu {
+        display: block
+      }
+
+      .services-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .about-grid,
+      .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 45px
+      }
+
+      .about-image {
+        height: 450px
+      }
+
+      .project-grid {
+        grid-template-columns: 1fr
+      }
+
+      .project-stack {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .leadership-grid {
+        grid-template-columns: 1fr
+      }
+
+      .person {
+        grid-template-columns: 180px 1fr
+      }
+    }
+
+    @media(max-width:600px) {
+      .container {
+        width: min(var(--max), calc(100% - 30px))
+      }
+
+      .top .container {
+        display: block;
+        text-align: center
+      }
+
+      .top {
+        font-size: 11px
+      }
+
+      .hero {
+        min-height: 720px
+      }
+
+      .hero-meta {
+        gap: 22px;
+        flex-wrap: wrap
+      }
+
+      .hero-meta strong {
+        font-size: 18px
+      }
+
+      .hero-meta span {
+        font-size: 9px
+      }
+
+      .section-head {
+        display: block
+      }
+
+      .section-head p {
+        margin-top: 18px
+      }
+
+      .services-grid,
+      .why-grid,
+      .stats-grid {
+        grid-template-columns: 1fr
+      }
+
+      .project-stack {
+        grid-template-columns: 1fr
+      }
+
+      .project,
+      .project.small {
+        height: 300px
+      }
+
+      .person {
+        grid-template-columns: 1fr
+      }
+
+      .person-photo {
+        height: 300px
+      }
+
+      .cta-box,
+      .footer-top {
+        display: block
+      }
+
+      .cta .dark-btn {
+        display: inline-block;
+        margin-top: 25px
+      }
+
+      .footer-links {
+        margin-top: 30px;
+        flex-wrap: wrap
+      }
+
+      .copyright {
+        display: block
+      }
+
+      .copyright span {
+        display: block;
+        margin-top: 8px
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr
+      }
+
+      .full {
+        grid-column: auto
+      }
+
+      .list {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+  <!-- Load floating live chat stylesheet -->
+  <link rel="stylesheet" href="/chat-widget.css">
+</head>
+
+<body>
+  <div class="top">
+    <div class="container"><span>Structural Engineering • Steel Fabrication • Industrial Solutions</span><span>Ghana &
+        Beyond</span></div>
+  </div>
+  <header>
+    <div class="container">
+      <nav>
+        <a class="brand" href="#home"><img src="/logo.JPG" alt="Maa Engineering Logo" class="brand-logo-img" style="height: 46px; width: auto; object-fit: contain; border-radius: 4px;"><span>MAA ENGINEERING<small>LIMITED</small></span></a>
+        <div class="links">
+          <a href="#about">About</a><a href="#services">Services</a><a href="#projects">Projects</a><a
+            href="#leadership">Leadership</a><a href="#contact" class="nav-cta">Request a Quote</a>
+        </div>
+        <button class="menu" aria-label="Menu"
+          onclick="document.querySelector('.links').classList.toggle('mobile')">☰</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="container">
+        <div class="hero-copy reveal">
+          <div class="eyebrow">Maa Engineering Limited</div>
+          <h1>Redefining <span>Steel Works</span> in Ghana & Beyond.</h1>
+          <p>Precision-engineered structural solutions, industrial fabrication and roofing systems built for strength,
+            efficiency and long-term performance.</p>
+          <div class="buttons"><a class="btn primary" href="#contact">Start a Project</a><a class="btn ghost"
+              href="#projects">View Our Work</a></div>
+          <div class="hero-meta">
+            <div><strong>PEB</strong><span>Buildings</span></div>
+            <div><strong>MS / SS</strong><span>Fabrication</span></div>
+            <div><strong>24/7</strong><span>Project Focus</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker">Who we are</div>
+            <h2>Engineering strength into every structure.</h2>
+          </div>
+          <p>Maa Engineering Limited delivers durable, cost-effective and technically precise metal works and structural
+            engineering solutions for industrial and commercial applications.</p>
+        </div>
+        <div class="about-grid">
+          <div class="about-image reveal"><img
+              src="/metal-fabrication-sharp.jpg"
+              alt="Metal fabrication specialist working on high precision steel component"></div>
+          <div class="about-copy reveal">
+            <div class="kicker">Our approach</div>
+            <h2>Built around precision, reliability and client satisfaction.</h2>
+            <p>From concept and custom design through fabrication, installation and after-sales support, our team
+              combines practical engineering expertise with disciplined project delivery.</p>
+            <p>We work with high-grade materials and modern fabrication techniques to produce solutions that meet
+              demanding site and operational requirements.</p>
+            <div class="list">
+              <div>Quality craftsmanship</div>
+              <div>On-time delivery</div>
+              <div>Custom engineering</div>
+              <div>Safety & compliance</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker">What we do</div>
+            <h2>Specialized capabilities. One dependable partner.</h2>
+          </div>
+          <p>Our core services cover the complete steel and structural lifecycle, from design and fabrication to
+            installation and support.</p>
+        </div>
+        <div class="services-grid reveal">
+          <article class="service"><span class="num">01</span>
+            <h3>Pre-Engineered Buildings</h3>
+            <p>End-to-end PEB solutions for industrial sheds, warehouses, cold storage facilities and commercial
+              complexes.</p>
+          </article>
+          <article class="service"><span class="num">02</span>
+            <h3>Metal Fabrication</h3>
+            <p>Custom MS, SS and aluminium fabrication including railings, platforms, mezzanines, staircases and
+              equipment housing.</p>
+          </article>
+          <article class="service"><span class="num">03</span>
+            <h3>Roofing & Trusses</h3>
+            <p>Long-span roofing, tubular and angular trusses, space frames, insulated panels and structural
+              retrofitting.</p>
+          </article>
+          <article class="service"><span class="num">04</span>
+            <h3>Concrete Mixer Machines</h3>
+            <p>Dealership and supply of concrete mixer machines for construction and infrastructure applications.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="container">
+        <div class="stats-grid reveal">
+          <div class="stat"><strong>01</strong><span>Engineering-led approach</span></div>
+          <div class="stat"><strong>04</strong><span>Core specialties</span></div>
+          <div class="stat"><strong>MS/SS</strong><span>Material capability</span></div>
+          <div class="stat"><strong>GHA</strong><span>Based in Ghana</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="why">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker">Why choose us</div>
+            <h2>Quality is engineered into the process.</h2>
+          </div>
+          <p>We combine experienced people, modern methods and accountable project management to deliver work that
+            stands up to real-world use.</p>
+        </div>
+        <div class="why-grid reveal">
+          <div class="why-item"><b>01</b>
+            <div>
+              <h3>Precision & craftsmanship</h3>
+              <p>Strong welds, accurate cutting and clean finishes with attention to structural integrity.</p>
+            </div>
+          </div>
+          <div class="why-item"><b>02</b>
+            <div>
+              <h3>Experienced team</h3>
+              <p>Hands-on knowledge across structural steel, fabrication and industrial projects.</p>
+            </div>
+          </div>
+          <div class="why-item"><b>03</b>
+            <div>
+              <h3>On-time delivery</h3>
+              <p>Planning and production processes designed around project schedules.</p>
+            </div>
+          </div>
+          <div class="why-item"><b>04</b>
+            <div>
+              <h3>Custom solutions</h3>
+              <p>Solutions tailored to specifications, site conditions and operational needs.</p>
+            </div>
+          </div>
+          <div class="why-item"><b>05</b>
+            <div>
+              <h3>Modern technology</h3>
+              <p>Contemporary cutting, welding and fabrication techniques for consistency and efficiency.</p>
+            </div>
+          </div>
+          <div class="why-item"><b>06</b>
+            <div>
+              <h3>Safety first</h3>
+              <p>Safety-conscious processes designed to protect people, projects and sites.</p>
+            </div>
+          </div>
+          <div class="why-item"><b>07</b>
+            <div>
+              <h3>Transparent pricing</h3>
+              <p>Clear, detailed quotations focused on value without hidden surprises.</p>
+            </div>
+          </div>
+          <div class="why-item"><b>08</b>
+            <div>
+              <h3>After-sales support</h3>
+              <p>Support, adjustments and maintenance guidance beyond project handover.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="projects" id="projects">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker">Selected work</div>
+            <h2>Structures made to perform.</h2>
+          </div>
+          <p>Project images from the company's portfolio can be placed here. The layout is ready for your actual
+            completed works.</p>
+        </div>
+        <div class="project-grid reveal">
+          <div class="project"><img
+              src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1400&q=85"
+              alt="Industrial construction">
+            <div class="label"><small>Industrial</small>
+              <h3>Structural Steel Works</h3>
+            </div>
+          </div>
+          <div class="project-stack">
+            <div class="project small"><img
+                src="https://images.unsplash.com/photo-1516939884455-1445c8652f83?auto=format&fit=crop&w=1000&q=85"
+                alt="Steel structure">
+              <div class="label"><small>Fabrication</small>
+                <h3>Custom Metalwork</h3>
+              </div>
+            </div>
+            <div class="project small"><img
+                src="https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1000&q=85"
+                alt="Roofing structure">
+              <div class="label"><small>Roofing</small>
+                <h3>Trusses & Roofing</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="leadership">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker">Leadership</div>
+            <h2>Experienced leadership. Clear direction.</h2>
+          </div>
+          <p>Our directors bring engineering focus, operational discipline and a strong commitment to client
+            relationships.</p>
+        </div>
+        <div class="leadership-grid">
+          <article class="person reveal">
+            <div class="person-photo">DIRECTOR<br>PHOTO PLACEHOLDER</div>
+            <div class="person-body">
+              <div class="role">Chief Executive Officer</div>
+              <h3>Shashi Kumar Nishad</h3>
+              <p>Mr. Nishad leads Maa Engineering Limited with a steadfast commitment to excellence. His hands-on
+                leadership, understanding of engineering fundamentals and focus on client satisfaction support the
+                company's reputation for precision, reliability and innovation in structural metal works.</p>
+            </div>
+          </article>
+          <article class="person reveal">
+            <div class="person-photo">DIRECTOR<br>PHOTO PLACEHOLDER</div>
+            <div class="person-body">
+              <div class="role">Co-Director</div>
+              <h3>Paulina Boafowaa</h3>
+              <p>Miss Boafowaa partners in steering the company's strategic vision and operational excellence, with a
+                strong focus on project delivery, quality assurance and client engagement. Her analytical and
+                people-centred approach strengthens stakeholder relationships and sustainable growth.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="container">
+        <div class="cta-box reveal">
+          <h2>Have a structure in mind? Let's build it right.</h2><a class="dark-btn" href="#contact">Request a
+            Consultation →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <div class="kicker">Contact</div>
+            <h2>Let's discuss your next project.</h2>
+          </div>
+          <p>Tell us what you are building, where it is located and what you need. Our team can discuss the appropriate
+            engineering and fabrication route.</p>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-info reveal">
+            <div class="contact-lines">
+              <div class="contact-line"><small>Office</small><strong>EG-156-0935 Nsawam New Road, Ghana</strong></div>
+              <div class="contact-line"><small>Telephone</small><strong>020 608 2457</strong><br><strong>054 071
+                  6171</strong></div>
+              <div class="contact-line"><small>Email</small><strong>Info@maaengineeringlimited.com</strong></div>
+              <div class="contact-line"><small>Office hours</small><strong>Monday – Saturday · 8:00 AM – 5:30
+                  PM</strong></div>
+            </div>
+          </div>
+          
+          <form class="form reveal">
+            <div class="form-grid">
+              <input required id="inquiry-name" placeholder="Full name">
+              <input required id="inquiry-email" type="email" placeholder="Email address">
+              <input id="inquiry-phone" placeholder="Phone number">
+              <select id="inquiry-type">
+                <option>Project type</option>
+                <option>PEB / Warehouse</option>
+                <option>Metal Fabrication</option>
+                <option>Roofing & Trusses</option>
+                <option>Concrete Mixer Machines</option>
+                <option>Other</option>
+              </select>
+              <textarea id="inquiry-message" class="full" placeholder="Tell us about your project"></textarea>
+              
+              <div class="full" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;">
+                <button type="submit" class="submit">Send Enquiry →</button>
+                <button type="button" id="whatsapp-submit" class="submit" style="background: #25D366; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.004 2c-5.51 0-9.996 4.486-9.996 9.998 0 1.761.459 3.475 1.33 4.986L2 22l5.163-1.354c1.47.801 3.125 1.222 4.837 1.222 5.51 0 9.996-4.485 9.996-9.997S17.514 2 12.004 2zm0 18.286c-1.503 0-2.98-.387-4.275-1.12l-.307-.174-3.181.834.848-3.097-.191-.304c-.799-1.272-1.22-2.738-1.22-4.254 0-4.563 3.713-8.275 8.327-8.275 4.613 0 8.328 3.712 8.328 8.275 0 4.564-3.715 8.275-8.329 8.275zM15.93 13.91c-.216-.108-1.277-.63-1.474-.702-.197-.072-.341-.108-.485.108-.144.216-.557.702-.682.846-.125.144-.251.162-.467.054a5.86 5.86 0 0 1-1.734-1.07 6.471 6.471 0 0 1-1.2-1.493c-.125-.216-.013-.333.094-.44.097-.097.216-.252.324-.379.108-.125.144-.216.216-.36.072-.144.036-.27-.018-.379-.054-.108-.485-1.17-.664-1.602-.175-.421-.349-.364-.485-.371l-.415-.008c-.144 0-.377.054-.575.27-.197.216-.755.738-.755 1.8 0 1.062.773 2.088.881 2.232.108.144 1.52 2.32 3.682 3.251.514.221.916.353 1.229.452.518.165.989.141 1.361.085.415-.062 1.277-.522 1.455-1.026.178-.504.178-.936.125-1.026-.053-.09-.197-.144-.413-.252z"/></svg>
+                  WhatsApp Us
+                </button>
+              </div>
+              
+              <div id="inquiry-feedback" class="full" style="margin-top: 15px; padding: 12px; font-size: 14px; font-weight: 600; border-radius: 4px; display: none; text-align: center;"></div>
+            </div>
+          </form>
+          
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-top">
+        <div><a class="brand footer-brand" href="#home"><img src="/logo.JPG" alt="Maa Engineering Logo" class="brand-logo-img" style="height: 46px; width: auto; object-fit: contain; border-radius: 4px;"><span>MAA
+              ENGINEERING<small>LIMITED</small></span></a>
+          <p>Structural engineering, steel fabrication and industrial solutions engineered for strength, precision and
+            lasting performance.</p>
+        </div>
+        <div class="footer-links"><a href="#about">About</a><a href="#services">Services</a><a
+            href="#projects">Projects</a><a href="#contact">Contact</a></div>
+      </div>
+      <div class="copyright"><span>© 2026 Maa Engineering Limited. All rights reserved.</span><span>Ghana · Structural
+          Engineering & Metal Works</span></div>
+    </div>
+  </footer>
+  
+  <script>
+    const revealObserver = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('show') }), { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  </script>
+  
+  <!-- Load Socket.io Client and Floating Widget script -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/chat-widget.js"></script>
+  
+  <script>
+    // Form submission AJAX logic
+    const contactForm = document.querySelector('.contact form');
+    const feedbackDiv = document.getElementById('inquiry-feedback');
+    const whatsappBtn = document.getElementById('whatsapp-submit');
+
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('inquiry-name').value;
+      const email = document.getElementById('inquiry-email').value;
+      const phone = document.getElementById('inquiry-phone').value;
+      const selectEl = document.getElementById('inquiry-type');
+      const projectType = selectEl.value === 'Project type' ? 'General Enquiry' : selectEl.value;
+      const message = document.getElementById('inquiry-message').value;
+
+      feedbackDiv.style.display = 'block';
+      feedbackDiv.style.background = '#f4f5f4';
+      feedbackDiv.style.color = '#667078';
+      feedbackDiv.style.border = '1px solid #dde1e3';
+      feedbackDiv.innerText = 'Sending enquiry...';
+
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, projectType, message })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          feedbackDiv.style.background = '#e6f4ea';
+          feedbackDiv.style.color = '#137333';
+          feedbackDiv.style.border = '1px solid #c2e7c9';
+          feedbackDiv.innerText = 'Thank you! Your enquiry has been sent successfully.';
+          contactForm.reset();
+        } else {
+          feedbackDiv.style.background = '#fce8e6';
+          feedbackDiv.style.color = '#c5221f';
+          feedbackDiv.style.border = '1px solid #fad2cf';
+          feedbackDiv.innerText = data.error || 'Failed to send enquiry. Please try again.';
+        }
+      } catch (err) {
+        feedbackDiv.style.background = '#fce8e6';
+        feedbackDiv.style.color = '#c5221f';
+        feedbackDiv.style.border = '1px solid #fad2cf';
+        feedbackDiv.innerText = 'Error connecting to the server. Please check your network.';
+      }
+    });
+
+    whatsappBtn.addEventListener('click', () => {
+      const name = document.getElementById('inquiry-name').value.trim();
+      const email = document.getElementById('inquiry-email').value.trim();
+      const phone = document.getElementById('inquiry-phone').value.trim();
+      const selectEl = document.getElementById('inquiry-type');
+      const projectType = selectEl.value === 'Project type' ? 'General' : selectEl.value;
+      const message = document.getElementById('inquiry-message').value.trim();
+
+      if (!name) {
+        alert('Please enter your name to contact on WhatsApp.');
+        document.getElementById('inquiry-name').focus();
+        return;
+      }
+
+      // Format WhatsApp Message
+      let text = `Hello Maa Engineering Limited,\n\n`;
+      text += `My name is: ${name}\n`;
+      if (email) text += `Email: ${email}\n`;
+      if (phone) text += `Phone: ${phone}\n`;
+      text += `Project Interest: ${projectType}\n`;
+      if (message) text += `Details: ${message}`;
+
+      const encodedText = encodeURIComponent(text);
+      
+      // WhatsApp Click-to-Chat Link (Maa Engineering Limited number)
+      // Retrieves redirect number dynamically if server was queried, else defaults to Ghana 233596324748
+      fetch('/api/admin/settings')
+        .then(res => res.json())
+        .then(settings => {
+          const num = settings.whatsappNumber || '233596324748';
+          window.open(`https://wa.me/${num}?text=${encodedText}`, '_blank');
+        })
+        .catch(() => {
+          window.open(`https://wa.me/233596324748?text=${encodedText}`, '_blank');
+        });
+    });
+  </script>
+</body>
+
+</html>
