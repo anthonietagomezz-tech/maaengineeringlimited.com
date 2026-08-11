@@ -514,12 +514,16 @@
     .person-photo {
       height: 330px;
       background: #e4e6e6;
-      display: grid;
-      place-items: center;
-      color: #7c8387;
-      font-size: 12px;
-      text-align: center;
-      padding: 20px
+      overflow: hidden;
+      display: block
+    }
+
+    .person-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block
     }
 
     .person-body {
@@ -1086,7 +1090,7 @@
         </div>
         <div class="leadership-grid">
           <article class="person reveal">
-            <div class="person-photo">DIRECTOR<br>PHOTO PLACEHOLDER</div>
+            <div class="person-photo"><img src="/shashi-kumar-nishad.jpg" alt="Shashi Kumar Nishad - Chief Executive Officer"></div>
             <div class="person-body">
               <div class="role">Chief Executive Officer</div>
               <h3>Shashi Kumar Nishad</h3>
@@ -1096,7 +1100,7 @@
             </div>
           </article>
           <article class="person reveal">
-            <div class="person-photo">DIRECTOR<br>PHOTO PLACEHOLDER</div>
+            <div class="person-photo"><img src="/paulina-boafowaa.jpg" alt="Paulina Boafowaa - Co-Director"></div>
             <div class="person-body">
               <div class="role">Co-Director</div>
               <h3>Paulina Boafowaa</h3>
