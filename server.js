@@ -508,6 +508,29 @@ io.on('connection', (socket) => {
         io.to(`chat_${chat.id}`).emit('newMessage', msg);
         io.emit('chatListUpdate'); // Tell admin to update chat list
       }
+
+      // Send live chat email notification to ADMIN_EMAIL
+      const adminEmail = process.env.ADMIN_EMAIL || 'support@winningedgeinvestment.com';
+      if (adminEmail) {
+        try {
+          const liveChatHtml = generateBrandedEmailHtml({
+            title: 'New Live Chat Session Started',
+            kicker: 'LIVE CHAT ALERT',
+            recipientName: 'Administrator',
+            contentHtml: `<p>A visitor has initiated a live chat conversation on the website.</p>`,
+            calloutHtml: `<strong>Visitor Name:</strong> ${chat.name}<br><strong>Visitor Email:</strong> ${chat.email || 'Not provided'}<br><strong>Initial Message:</strong> ${text || 'Started live chat session'}`
+          });
+
+          await sendMailHelper(
+            adminEmail,
+            `[Live Chat Alert] ${chat.name} started a live chat`,
+            `Visitor ${chat.name} (${chat.email || 'No email'}) started a live chat session.\nInitial message: ${text || 'None'}`,
+            liveChatHtml
+          );
+        } catch (mailErr) {
+          console.warn('Live chat email alert failed.', mailErr.message);
+        }
+      }
     } catch (err) {
       console.error('Error starting chat session:', err);
       socket.emit('error', 'Failed to start chat session.');
