@@ -339,16 +339,6 @@
 
     .services-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      background: var(--line);
-      border: 1px solid var(--line)
-    }
-
-    .service {
-      background: #fff;
-    .services-grid {
-      display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 28px
     }
@@ -787,6 +777,12 @@
 
       .services-grid {
         grid-template-columns: 1fr 1fr
+      }
+
+      @media(max-width:768px) {
+        .services-grid {
+          grid-template-columns: 1fr
+        }
       }
 
       .about-grid,
