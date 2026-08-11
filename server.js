@@ -1,3 +1,4 @@
+const fs = require('fs');
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
@@ -43,8 +44,83 @@ const authenticateAdmin = async (req, res, next) => {
   }
 };
 
+// Helper: Generate Branded HTML Email Template
+function generateBrandedEmailHtml({ title, kicker = '', recipientName = '', contentHtml = '', calloutHtml = '' }) {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f6f8; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f6f8; padding: 40px 10px;">
+    <tr>
+      <td align="center">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 1px solid #e9ecef;">
+          
+          <!-- BRAND HEADER BANNER -->
+          <tr>
+            <td style="background-color: #111315; border-top: 4px solid #c89b55; padding: 24px 32px;">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td width="48" valign="middle">
+                    <img src="cid:companylogo" alt="Maa Engineering Logo" width="44" height="44" style="display: block; border-radius: 6px; border: 0;">
+                  </td>
+                  <td valign="middle" style="padding-left: 14px;">
+                    <div style="color: #ffffff; font-size: 16px; font-weight: 800; letter-spacing: 1.5px; margin: 0; font-family: Arial, sans-serif;">MAA ENGINEERING</div>
+                    <div style="color: #c89b55; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: 2px;">LIMITED · STRUCTURAL SOLUTIONS</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- BODY CONTENT -->
+          <tr>
+            <td style="padding: 36px 32px; color: #111315;">
+              ${kicker ? `<div style="color: #c89b55; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">${kicker}</div>` : ''}
+              <h1 style="font-size: 22px; font-weight: 800; color: #111315; margin: 0 0 20px 0; line-height: 1.3; font-family: Arial, sans-serif;">${title}</h1>
+              
+              ${recipientName ? `<div style="font-size: 15px; font-weight: 700; color: #111315; margin-bottom: 16px;">Dear ${recipientName},</div>` : ''}
+              
+              <div style="font-size: 14px; line-height: 1.7; color: #333940; margin-bottom: 20px;">
+                ${contentHtml}
+              </div>
+
+              ${calloutHtml ? `
+                <div style="background-color: #f8f9fa; border-left: 4px solid #c89b55; border-radius: 6px; padding: 20px; margin: 24px 0; font-size: 13.5px; color: #111315; line-height: 1.6;">
+                  ${calloutHtml}
+                </div>
+              ` : ''}
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="background-color: #16191c; border-top: 1px solid #22262b; padding: 24px 32px; text-align: center; color: #868e96; font-size: 12px;">
+              <div style="color: #c89b55; font-weight: 700; letter-spacing: 1px; margin-bottom: 6px; font-size: 13px;">MAA ENGINEERING LIMITED</div>
+              <div style="margin-bottom: 10px; color: #a0a6ac; font-size: 11.5px;">Structural Engineering · Steel Fabrication · Industrial Solutions</div>
+              <div style="margin-bottom: 12px; font-size: 12px;">
+                <a href="https://maaengineeringlimited.com" style="color: #c89b55; text-decoration: none; font-weight: 600; margin: 0 8px;">Website</a> ·
+                <a href="https://maaengineeringlimited.com/admin" style="color: #c89b55; text-decoration: none; font-weight: 600; margin: 0 8px;">Admin Portal</a>
+              </div>
+              <div style="font-size: 11px; color: #6c757d;">© ${new Date().getFullYear()} Maa Engineering Limited. All rights reserved.</div>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+}
+
 // Helper: Send email reply via Hostinger SMTP (.env)
-async function sendMailHelper(to, subject, body, settingsOverride = null) {
+async function sendMailHelper(to, subject, textBody, htmlBody = null, settingsOverride = null) {
   const host = process.env.SMTP_HOST || (settingsOverride && settingsOverride.smtpHost);
   const port = parseInt(process.env.SMTP_PORT || (settingsOverride && settingsOverride.smtpPort)) || 465;
   const secure = process.env.SMTP_SECURE === 'true' || port === 465;
@@ -65,12 +141,23 @@ async function sendMailHelper(to, subject, body, settingsOverride = null) {
       auth: { user, pass }
     });
 
+    const logoPath = path.join(__dirname, 'public', 'logo.JPG');
+    const attachments = [];
+    if (fs.existsSync(logoPath)) {
+      attachments.push({
+        filename: 'logo.JPG',
+        path: logoPath,
+        cid: 'companylogo'
+      });
+    }
+
     const info = await transporter.sendMail({
       from: `"Maa Engineering Limited" <${sender}>`,
       to,
       subject,
-      text: body,
-      html: body.replace(/\n/g, '<br>')
+      text: textBody,
+      html: htmlBody || textBody.replace(/\n/g, '<br>'),
+      attachments
     });
 
     console.log('[SMTP SUCCESS] Email sent to %s (Message ID: %s)', to, info.messageId);
@@ -99,10 +186,19 @@ app.post('/api/contact', async (req, res) => {
 
     // Send auto-acknowledgement email to visitor
     try {
+      const ackHtml = generateBrandedEmailHtml({
+        title: 'Project Enquiry Acknowledgement',
+        kicker: 'ENQUIRY RECEIVED',
+        recipientName: name,
+        contentHtml: `<p>Thank you for contacting Maa Engineering Limited. We have received your project enquiry regarding <strong>"${projectType || 'General Enquiry'}"</strong>.</p><p>Our engineering team will review your specifications and get back to you shortly with next steps.</p>`,
+        calloutHtml: `<strong>Submitted Details:</strong><br><strong>Project Interest:</strong> ${projectType || 'General Enquiry'}<br><strong>Message:</strong> ${message}`
+      });
+
       await sendMailHelper(
         email,
         'Thank you for contacting Maa Engineering Limited',
-        `Dear ${name},\n\nThank you for reaching out to Maa Engineering Limited. We have received your project enquiry regarding "${projectType || 'General Enquiry'}".\n\nOur engineering team will review your request and get back to you shortly.\n\nBest regards,\nMaa Engineering Limited Team`
+        `Dear ${name},\n\nThank you for reaching out to Maa Engineering Limited. We have received your project enquiry regarding "${projectType || 'General Enquiry'}".\n\nOur engineering team will review your request and get back to you shortly.\n\nBest regards,\nMaa Engineering Limited Team`,
+        ackHtml
       );
     } catch (mailErr) {
       console.warn('Auto-acknowledgement email failed, but inquiry was saved.', mailErr.message);
@@ -112,10 +208,19 @@ app.post('/api/contact', async (req, res) => {
     const adminEmail = process.env.ADMIN_EMAIL || 'support@winningedgeinvestment.com';
     if (adminEmail) {
       try {
+        const adminHtml = generateBrandedEmailHtml({
+          title: 'New Project Enquiry Received',
+          kicker: 'WEBSITE INQUIRY ALERT',
+          recipientName: 'Administrator',
+          contentHtml: `<p>A new project enquiry has been submitted through the Maa Engineering Limited website.</p>`,
+          calloutHtml: `<strong>Client Name:</strong> ${name}<br><strong>Email Address:</strong> <a href="mailto:${email}">${email}</a><br><strong>Phone Number:</strong> ${phone || 'Not provided'}<br><strong>Project Interest:</strong> <span style="color:#c89b55; font-weight:700;">${projectType || 'General Enquiry'}</span><br><br><strong>Message Body:</strong><br>${message}`
+        });
+
         await sendMailHelper(
           adminEmail,
           `[New Project Enquiry] From ${name} - ${projectType || 'General'}`,
-          `New Project Enquiry Details:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nProject Interest: ${projectType || 'General'}\n\nMessage:\n${message}\n\n---\nReceived on Maa Engineering Limited Website`
+          `New Project Enquiry Details:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nProject Interest: ${projectType || 'General'}\n\nMessage:\n${message}\n\n---\nReceived on Maa Engineering Limited Website`,
+          adminHtml
         );
       } catch (adminMailErr) {
         console.warn('Admin notification email failed.', adminMailErr.message);
@@ -252,14 +357,19 @@ app.post('/api/admin/messages/:id/reply', authenticateAdmin, async (req, res) =>
       return res.status(404).json({ error: 'Inquiry not found.' });
     }
 
-    const settings = await db.getSettings();
+    const replyHtml = generateBrandedEmailHtml({
+      title: `Response to your enquiry regarding ${message.projectType || 'Steel Works'}`,
+      kicker: 'PROJECT ENQUIRY RESPONSE',
+      recipientName: message.name,
+      contentHtml: replyText.replace(/\n/g, '<br>')
+    });
     
     // Send email
     const mailResult = await sendMailHelper(
       message.email,
       `RE: Enquiry regarding ${message.projectType || 'Steel Works'} - Maa Engineering Ltd`,
       replyText,
-      settings
+      replyHtml
     );
 
     // Save reply to database
