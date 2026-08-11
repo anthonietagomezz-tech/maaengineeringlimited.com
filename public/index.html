@@ -347,36 +347,97 @@
 
     .service {
       background: #fff;
-      padding: 34px 28px;
-      min-height: 310px;
-      transition: .25s
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px
     }
 
-    .service:hover {
-      background: #111;
-      color: white;
-      transform: translateY(-5px)
+    .service-card {
+      border: 1px solid var(--line);
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease
     }
 
-    .num {
-      font-family: Manrope;
-      color: #9a7440;
+    .service-card:hover {
+      transform: translateY(-4px);
+      border-color: #c89b55;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08)
+    }
+
+    .service-media {
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+      background: #0b0d0e
+    }
+
+    .service-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      display: block
+    }
+
+    .service-card:hover .service-media img {
+      transform: scale(1.06)
+    }
+
+    .service-num-badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: #111315;
+      color: #c89b55;
+      border: 1px solid rgba(200, 155, 85, 0.4);
+      font-size: 11px;
       font-weight: 800;
-      font-size: 12px
+      padding: 4px 10px;
+      border-radius: 12px;
+      letter-spacing: 1px
     }
 
-    .service h3 {
-      font-size: 25px;
-      margin: 60px 0 15px
+    .service-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex: 1
     }
 
-    .service p {
-      color: var(--muted);
-      font-size: 14px
+    .service-body h3 {
+      font-family: Outfit, sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: #111315;
+      margin-bottom: 8px
     }
 
-    .service:hover p {
-      color: #bdc3c6
+    .service-body p {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: #5a626a;
+      margin-bottom: 16px
+    }
+
+    .service-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: auto
+    }
+
+    .service-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #9e773b;
+      background: rgba(200, 155, 85, 0.1);
+      padding: 3px 8px;
+      border-radius: 4px
     }
 
     .stats {
@@ -943,25 +1004,75 @@
             installation and support.</p>
         </div>
         <div class="services-grid reveal">
-          <article class="service"><span class="num">01</span>
-            <h3>Pre-Engineered Buildings</h3>
-            <p>End-to-end PEB solutions for industrial sheds, warehouses, cold storage facilities and commercial
-              complexes.</p>
+          
+          <!-- 01: Pre-Engineered Buildings -->
+          <article class="service-card">
+            <div class="service-media">
+              <img src="/service-peb.jpg" alt="Pre-Engineered Buildings (PEB) Warehouse & Shed Construction">
+              <span class="service-num-badge">01</span>
+            </div>
+            <div class="service-body">
+              <h3>Pre-Engineered Buildings</h3>
+              <p>End-to-end PEB solutions for industrial sheds, warehouses, cold storage facilities and commercial complexes.</p>
+              <div class="service-tags">
+                <span class="service-tag">Industrial Sheds</span>
+                <span class="service-tag">Warehouses</span>
+                <span class="service-tag">Cold Storage</span>
+              </div>
+            </div>
           </article>
-          <article class="service"><span class="num">02</span>
-            <h3>Metal Fabrication</h3>
-            <p>Custom MS, SS and aluminium fabrication including railings, platforms, mezzanines, staircases and
-              equipment housing.</p>
+
+          <!-- 02: Metal Fabrication -->
+          <article class="service-card">
+            <div class="service-media">
+              <img src="/service-fabrication.jpg" alt="Custom Metal Fabrication, Stainless Steel & Structural Work">
+              <span class="service-num-badge">02</span>
+            </div>
+            <div class="service-body">
+              <h3>Metal Fabrication</h3>
+              <p>Custom MS, SS and aluminium fabrication including railings, platforms, mezzanines, staircases and equipment housing.</p>
+              <div class="service-tags">
+                <span class="service-tag">MS & SS Custom Work</span>
+                <span class="service-tag">Platforms & Mezzanines</span>
+                <span class="service-tag">Railings</span>
+              </div>
+            </div>
           </article>
-          <article class="service"><span class="num">03</span>
-            <h3>Roofing & Trusses</h3>
-            <p>Long-span roofing, tubular and angular trusses, space frames, insulated panels and structural
-              retrofitting.</p>
+
+          <!-- 03: Roofing & Trusses -->
+          <article class="service-card">
+            <div class="service-media">
+              <img src="/service-roofing.jpg" alt="Long-span Roofing, Steel Trusses & Space Frames">
+              <span class="service-num-badge">03</span>
+            </div>
+            <div class="service-body">
+              <h3>Roofing & Trusses</h3>
+              <p>Long-span roofing, tubular and angular trusses, space frames, insulated panels and structural retrofitting.</p>
+              <div class="service-tags">
+                <span class="service-tag">Long-Span Roofing</span>
+                <span class="service-tag">Angular Trusses</span>
+                <span class="service-tag">Space Frames</span>
+              </div>
+            </div>
           </article>
-          <article class="service"><span class="num">04</span>
-            <h3>Concrete Mixer Machines</h3>
-            <p>Dealership and supply of concrete mixer machines for construction and infrastructure applications.</p>
+
+          <!-- 04: Concrete Mixer Machines -->
+          <article class="service-card">
+            <div class="service-media">
+              <img src="/service-machinery.jpg" alt="Concrete Mixer Machinery & Heavy Construction Equipment Dealership">
+              <span class="service-num-badge">04</span>
+            </div>
+            <div class="service-body">
+              <h3>Concrete Mixer Machines</h3>
+              <p>Dealership and supply of concrete mixer machines for construction and infrastructure applications.</p>
+              <div class="service-tags">
+                <span class="service-tag">Construction Dealership</span>
+                <span class="service-tag">Mixer Equipment</span>
+                <span class="service-tag">Infrastructure</span>
+              </div>
+            </div>
           </article>
+
         </div>
       </div>
     </section>
