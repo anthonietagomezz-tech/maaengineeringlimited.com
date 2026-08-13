@@ -1243,8 +1243,7 @@
           <div class="contact-info reveal">
             <div class="contact-lines">
               <div class="contact-line"><small>Office</small><strong>EG-156-0935 Nsawam New Road, Ghana</strong></div>
-              <div class="contact-line"><small>Telephone</small><strong>020 608 2457</strong><br><strong>054 071
-                  6171</strong></div>
+              <div class="contact-line"><small>Telephone</small><strong>024 676 0711</strong><br><strong>020 443 7721</strong></div>
               <div class="contact-line"><small>Email</small><strong>Info@maaengineeringlimited.com</strong></div>
               <div class="contact-line"><small>Office hours</small><strong>Monday – Saturday · 8:00 AM – 5:30
                   PM</strong></div>
@@ -1385,15 +1384,15 @@
       const encodedText = encodeURIComponent(text);
       
       // WhatsApp Click-to-Chat Link (Maa Engineering Limited number)
-      // Retrieves redirect number dynamically if server was queried, else defaults to Ghana 233596324748
+      // Retrieves redirect number dynamically if server was queried, else defaults to Ghana 233204437721
       fetch('/api/admin/settings')
         .then(res => res.json())
         .then(settings => {
-          const num = settings.whatsappNumber || '233596324748';
+          const num = settings.whatsappNumber || '233204437721';
           window.open(`https://wa.me/${num}?text=${encodedText}`, '_blank');
         })
         .catch(() => {
-          window.open(`https://wa.me/233596324748?text=${encodedText}`, '_blank');
+          window.open(`https://wa.me/233204437721?text=${encodedText}`, '_blank');
         });
     });
   </script>

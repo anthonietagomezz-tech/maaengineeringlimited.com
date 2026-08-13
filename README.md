@@ -78,11 +78,11 @@ Log in to the administrator portal using the default credentials:
 ## System Configuration
 
 ### 1. WhatsApp Contact Redirection
-By default, the WhatsApp features direct to the company number `233596324748`. 
+By default, the WhatsApp features direct to the company number `233204437721`. 
 To modify the contact number:
 - Log into the Admin Portal.
 - Go to the **Settings** tab.
-- Enter the new digits in the **WhatsApp Redirect Settings** (digits only, e.g., `233596324748` for Ghana).
+- Enter the new digits in the **WhatsApp Redirect Settings** (digits only, e.g., `233204437721` for Ghana).
 - Click **Save Redirect Config**.
 
 ### 2. Email Server (SMTP Configuration)

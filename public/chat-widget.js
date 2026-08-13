@@ -124,7 +124,7 @@
   let typingTimeout = null;
 
   // Fetch whatsapp redirect number dynamically
-  let whatsappNum = '233596324748';
+  let whatsappNum = '233204437721';
   fetch('/api/admin/settings')
     .then(r => r.json())
     .then(settings => {

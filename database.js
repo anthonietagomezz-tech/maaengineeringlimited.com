@@ -88,14 +88,17 @@ class Database {
         await pool.query('INSERT INTO admin_users (username, password_hash) VALUES ($1, $2)', ['admin', passwordHash]);
       }
 
-      // 3. Populate Default Settings if empty
+      // 3. Populate Default Settings if empty or update if it was old default
       const settingsCheck = await pool.query('SELECT * FROM settings LIMIT 1');
       if (settingsCheck.rows.length === 0) {
         console.log('[PG DB] Seed: Inserting default configurations...');
         await pool.query(`
           INSERT INTO settings (whatsapp_number, smtp_enabled, smtp_host, smtp_port, smtp_user, smtp_pass, sender_email)
           VALUES ($1, $2, $3, $4, $5, $6, $7)
-        `, ['233596324748', false, 'smtp.mailtrap.io', '2525', '', '', 'info@maaengineeringlimited.com']);
+        `, ['233204437721', false, 'smtp.mailtrap.io', '2525', '', '', 'info@maaengineeringlimited.com']);
+      } else if (settingsCheck.rows[0].whatsapp_number === '233596324748') {
+        console.log('[PG DB] Seed: Updating default WhatsApp number to 233204437721...');
+        await pool.query(`UPDATE settings SET whatsapp_number = $1`, ['233204437721']);
       }
       console.log('PostgreSQL database initialization completed successfully.');
     } catch (error) {
