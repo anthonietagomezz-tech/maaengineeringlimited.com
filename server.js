@@ -140,14 +140,13 @@ function generateBrandedEmailHtml({ title, kicker = '', recipientName = '', cont
   `;
 }
 
-// Helper: Send email reply via Hostinger SMTP (.env)
-async function sendMailHelper(to, subject, textBody, htmlBody = null, settingsOverride = null) {
+// Helper: Send email reply via SMTP (.env)
+async function sendMailHelper(to, subject, textBody, htmlBody = null, settingsOverride = null, customSender = null) {
   const host = process.env.SMTP_HOST || (settingsOverride && settingsOverride.smtpHost);
-  const port = parseInt(process.env.SMTP_PORT || (settingsOverride && settingsOverride.smtpPort)) || 465;
+  const port = parseInt(process.env.SMTP_PORT || (settingsOverride && settingsOverride.smtpPort)) || 587;
   const secure = process.env.SMTP_SECURE === 'true' || port === 465;
   const user = process.env.SMTP_USER || (settingsOverride && settingsOverride.smtpUser);
   const pass = process.env.SMTP_PASS || (settingsOverride && settingsOverride.smtpPass);
-  const sender = process.env.SMTP_USER || (settingsOverride && settingsOverride.senderEmail) || 'support@winningedgeinvestment.com';
 
   if (!host || !user || !pass) {
     console.log(`[SMTP MOCK] Email to: ${to} | Subject: ${subject}`);
@@ -172,8 +171,13 @@ async function sendMailHelper(to, subject, textBody, htmlBody = null, settingsOv
       });
     }
 
+    let fromHeader = customSender || `"Maa Engineering Limited" <${user}>`;
+    if (customSender && !customSender.includes('<')) {
+      fromHeader = `"Maa Engineering Limited" <${customSender}>`;
+    }
+
     const info = await transporter.sendMail({
-      from: `"Maa Engineering Limited" <${sender}>`,
+      from: fromHeader,
       to,
       subject,
       text: textBody,
@@ -219,7 +223,9 @@ app.post('/api/contact', async (req, res) => {
         email,
         'Thank you for contacting Maa Engineering Limited',
         `Dear ${name},\n\nThank you for reaching out to Maa Engineering Limited. We have received your project enquiry regarding "${projectType || 'General Enquiry'}".\n\nOur engineering team will review your request and get back to you shortly.\n\nBest regards,\nMaa Engineering Limited Team`,
-        ackHtml
+        ackHtml,
+        null,
+        '"Maa Engineering Enquiries" <enquiry@maaengineeringlimited.com>'
       );
     } catch (mailErr) {
       console.warn('Auto-acknowledgement email failed, but inquiry was saved.', mailErr.message);
@@ -402,7 +408,9 @@ app.post('/api/admin/messages/:id/reply', authenticateAdmin, async (req, res) =>
       message.email,
       `RE: Enquiry regarding ${message.projectType || 'Steel Works'} - Maa Engineering Ltd`,
       replyText,
-      replyHtml
+      replyHtml,
+      null,
+      '"Maa Engineering Support" <support@maaengineeringlimited.com>'
     );
 
     // Save reply to database
