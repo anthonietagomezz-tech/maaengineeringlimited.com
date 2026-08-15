@@ -598,8 +598,15 @@ io.on('connection', (socket) => {
       if (text && text.trim() !== '') {
         const msg = await db.addChatMessage(chat.id, 'user', text);
         io.to(`chat_${chat.id}`).emit('newMessage', msg);
-        io.emit('chatListUpdate'); // Tell admin to update chat list
       }
+
+      // Automated Instant Greeting Reply addressed to the client by name
+      const clientName = (chat.name && chat.name.trim()) ? chat.name.trim() : 'there';
+      const autoGreetingText = `Hello ${clientName}! 👋 Thank you for starting a chat with Maa Engineering Limited. An engineering support agent will be with you shortly.`;
+      const autoMsg = await db.addChatMessage(chat.id, 'admin', autoGreetingText);
+      io.to(`chat_${chat.id}`).emit('newMessage', autoMsg);
+
+      io.emit('chatListUpdate'); // Tell admin to update chat list
 
       // Send live chat email notification to ADMIN_EMAIL
       const adminEmail = process.env.ADMIN_EMAIL || 'support@winningedgeinvestment.com';
