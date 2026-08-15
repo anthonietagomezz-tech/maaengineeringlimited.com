@@ -90,6 +90,14 @@ class Database {
         );
       `);
 
+      // Ensure soft-delete columns exist for Data Retention Law compliance
+      await pool.query(`
+        ALTER TABLE messages ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
+        ALTER TABLE messages ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP;
+        ALTER TABLE gallery ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
+        ALTER TABLE gallery ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP;
+      `);
+
       // 2. Populate Default Admin User if empty
       const adminCheck = await pool.query('SELECT * FROM admin_users LIMIT 1');
       if (adminCheck.rows.length === 0) {
@@ -156,7 +164,7 @@ class Database {
 
   // --- CONTACT MESSAGES METHODS ---
   async getMessages() {
-    const res = await pool.query('SELECT * FROM messages ORDER BY created_at DESC');
+    const res = await pool.query("SELECT * FROM messages WHERE COALESCE(is_deleted, false) = FALSE AND status != 'deleted' ORDER BY created_at DESC");
     const messages = [];
     for (const row of res.rows) {
       const repliesRes = await pool.query('SELECT id, reply_text, sent_at FROM replies WHERE message_id = $1 ORDER BY sent_at ASC', [row.id]);
@@ -248,7 +256,11 @@ class Database {
   }
 
   async deleteMessage(id) {
-    const res = await pool.query('DELETE FROM messages WHERE id = $1', [id]);
+    const res = await pool.query(`
+      UPDATE messages
+      SET is_deleted = TRUE, status = 'deleted', deleted_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+    `, [id]);
     return res.rowCount > 0;
   }
 
@@ -348,11 +360,11 @@ class Database {
 
   // --- SYSTEM STATS & SETTINGS ---
   async getStats() {
-    const totalRes = await pool.query('SELECT COUNT(*) FROM messages');
-    const unreadRes = await pool.query("SELECT COUNT(*) FROM messages WHERE status = 'unread'");
-    const repliedRes = await pool.query("SELECT COUNT(*) FROM messages WHERE status = 'replied'");
+    const totalRes = await pool.query("SELECT COUNT(*) FROM messages WHERE COALESCE(is_deleted, false) = FALSE AND status != 'deleted'");
+    const unreadRes = await pool.query("SELECT COUNT(*) FROM messages WHERE status = 'unread' AND COALESCE(is_deleted, false) = FALSE");
+    const repliedRes = await pool.query("SELECT COUNT(*) FROM messages WHERE status = 'replied' AND COALESCE(is_deleted, false) = FALSE");
     const activeChatsRes = await pool.query("SELECT COUNT(*) FROM chats WHERE status = 'active'");
-    const totalGalleryRes = await pool.query('SELECT COUNT(*) FROM gallery');
+    const totalGalleryRes = await pool.query("SELECT COUNT(*) FROM gallery WHERE COALESCE(is_deleted, false) = FALSE");
 
     return {
       totalInquiries: parseInt(totalRes.rows[0].count) || 0,
@@ -365,7 +377,7 @@ class Database {
 
   // --- GALLERY METHODS ---
   async getGalleryItems() {
-    const res = await pool.query('SELECT * FROM gallery ORDER BY created_at DESC');
+    const res = await pool.query("SELECT * FROM gallery WHERE COALESCE(is_deleted, false) = FALSE ORDER BY created_at DESC");
     return res.rows.map(row => ({
       id: row.id,
       title: row.title,
@@ -401,7 +413,12 @@ class Database {
   }
 
   async deleteGalleryItem(id) {
-    const res = await pool.query('DELETE FROM gallery WHERE id = $1 RETURNING *', [id]);
+    const res = await pool.query(`
+      UPDATE gallery
+      SET is_deleted = TRUE, deleted_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+      RETURNING *
+    `, [id]);
     if (res.rows.length === 0) return null;
     return res.rows[0];
   }
