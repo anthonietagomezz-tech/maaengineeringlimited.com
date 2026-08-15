@@ -209,6 +209,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('typing', ({ chatId, sender }) => {
       if (selectedChatId && chatId === selectedChatId && sender === 'user') {
+        const activeChat = chatSessions.find(c => c.id === selectedChatId);
+        const visitorName = (activeChat && activeChat.name) ? activeChat.name.split(' ')[0] : 'Client';
+        const typingText = document.querySelector('#visitor-typing-alert span:last-child');
+        if (typingText) typingText.innerText = `${visitorName} is typing...`;
         const el = document.getElementById('visitor-typing-alert');
         if (el) el.style.display = 'flex';
       }
@@ -876,9 +880,11 @@ document.addEventListener('DOMContentLoaded', () => {
     msgDiv.className = `wa-bubble-row ${isUser ? 'user incoming' : 'admin outgoing'}`;
 
     if (isUser) {
+      const activeChat = chatSessions.find(c => c.id === selectedChatId);
+      const visitorName = (activeChat && activeChat.name) ? activeChat.name : 'Client';
       msgDiv.innerHTML = `
         <div class="wa-bubble">
-          <div class="wa-sender-tag">Visitor</div>
+          <div class="wa-sender-tag">${escapeHtml(visitorName)}</div>
           <div>${escapeHtml(text).replace(/\n/g, '<br>')}</div>
           <div class="wa-bubble-footer">${timeStr}</div>
         </div>
