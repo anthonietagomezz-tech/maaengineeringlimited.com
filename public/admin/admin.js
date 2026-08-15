@@ -347,6 +347,9 @@ document.addEventListener('DOMContentLoaded', () => {
       case 'settings':
         fetchSettings();
         break;
+      case 'gallery':
+        fetchAdminGallery();
+        break;
     }
   }
 
@@ -355,7 +358,8 @@ document.addEventListener('DOMContentLoaded', () => {
       overview: { title: 'Overview Dashboard', subtitle: 'Real-time metrics, active chat statistics, and recent enquiries.' },
       inquiries: { title: 'Inquiry Inbox', subtitle: 'Manage submissions, view client interest details, and compose replies.' },
       livechat: { title: 'Live Chat Operator', subtitle: 'Chat with visitors browsing your website in real-time.' },
-      settings: { title: 'System Settings', subtitle: 'Change passwords, update WhatsApp numbers, and configure SMTP gateway servers.' }
+      settings: { title: 'System Settings', subtitle: 'Change passwords, update WhatsApp numbers, and configure SMTP gateway servers.' },
+      gallery: { title: 'Gallery Management', subtitle: 'Upload, organize, and publish project photos on the website.' }
     };
     
     tabTitleDisplay.innerText = titles[tab].title;
@@ -374,6 +378,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('stat-unread-inquiries').innerText = stats.unreadInquiries;
         document.getElementById('stat-active-chats').innerText = stats.activeChats;
         document.getElementById('stat-replied-inquiries').innerText = stats.repliedInquiries;
+        const galStat = document.getElementById('stat-total-gallery');
+        if (galStat) galStat.innerText = stats.totalGalleryPhotos || 0;
 
         // Side navigation badges
         if (stats.unreadInquiries > 0) {
@@ -1226,6 +1232,166 @@ document.addEventListener('DOMContentLoaded', () => {
           feedback.innerText = 'Server connection failed.';
         }
       }
+    });
+  }
+
+  // ==========================================
+  // 6. GALLERY MANAGEMENT LOGIC
+  // ==========================================
+  let adminGalleryItems = [];
+
+  async function fetchAdminGallery() {
+    try {
+      const response = await fetch('/api/gallery');
+      if (response.ok) {
+        adminGalleryItems = await response.json();
+        renderAdminGalleryGrid();
+      }
+    } catch (err) {
+      console.error('Failed to load admin gallery items:', err);
+    }
+  }
+
+  function renderAdminGalleryGrid() {
+    const grid = document.getElementById('admin-gallery-grid');
+    const countTag = document.getElementById('gal-count-tag');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+    if (countTag) countTag.innerText = `${adminGalleryItems.length} Photos`;
+
+    if (adminGalleryItems.length === 0) {
+      grid.innerHTML = '<div style="grid-column: 1 / -1; color: #64748b; font-size: 13px;">No gallery photos uploaded yet.</div>';
+      return;
+    }
+
+    adminGalleryItems.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'admin-gal-card';
+      card.innerHTML = `
+        <div class="admin-gal-img-wrap">
+          <img src="${item.imageUrl}" alt="${escapeHtml(item.title)}">
+          <span class="admin-gal-badge">${escapeHtml(item.category || 'General')}</span>
+        </div>
+        <div class="admin-gal-body">
+          <div class="admin-gal-title">${escapeHtml(item.title)}</div>
+          <div class="admin-gal-caption">${escapeHtml(item.caption || 'No caption')}</div>
+          <button class="btn-delete-gal" onclick="deleteGalleryPhoto('${item.id}')">Delete Photo</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  // Global delete method attached to window for click handler
+  window.deleteGalleryPhoto = async function(id) {
+    if (!confirm('Are you sure you want to delete this gallery photo from the website?')) return;
+    try {
+      const response = await fetch(`/api/admin/gallery/${id}`, { method: 'DELETE' });
+      if (response.ok) {
+        showToastAlert('Gallery photo deleted successfully.');
+        fetchAdminGallery();
+        fetchStats();
+      } else {
+        alert('Failed to delete gallery photo.');
+      }
+    } catch (err) {
+      console.error('Error deleting photo:', err);
+    }
+  };
+
+  // Preview Image on File Selection
+  const galFileInput = document.getElementById('gal-file');
+  const galPreviewContainer = document.getElementById('gal-preview-container');
+  const galPreviewImg = document.getElementById('gal-preview-img');
+
+  if (galFileInput && galPreviewContainer && galPreviewImg) {
+    galFileInput.addEventListener('change', () => {
+      const file = galFileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          galPreviewImg.src = e.target.result;
+          galPreviewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        galPreviewContainer.style.display = 'none';
+      }
+    });
+  }
+
+  // Gallery Upload Form Submit Handler
+  const adminGalleryForm = document.getElementById('admin-gallery-form');
+  if (adminGalleryForm) {
+    adminGalleryForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('gal-title').value.trim();
+      const category = document.getElementById('gal-category').value;
+      const caption = document.getElementById('gal-caption').value.trim();
+      const fileInput = document.getElementById('gal-file');
+      const feedback = document.getElementById('gal-form-feedback');
+      const submitBtn = document.getElementById('gal-submit-btn');
+
+      if (!title || !fileInput.files[0]) {
+        alert('Please enter a photo title and select an image file.');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      if (feedback) {
+        feedback.style.display = 'block';
+        feedback.className = 'settings-feedback';
+        feedback.innerText = 'Uploading photo to website...';
+      }
+      if (submitBtn) submitBtn.disabled = true;
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const imageBase64 = event.target.result;
+
+        try {
+          const response = await fetch('/api/admin/gallery', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title,
+              category,
+              caption,
+              imageBase64,
+              filename: file.name
+            })
+          });
+
+          if (response.ok) {
+            if (feedback) {
+              feedback.className = 'settings-feedback success';
+              feedback.innerText = 'Gallery photo uploaded successfully!';
+            }
+            showToastAlert('New photo published to gallery!');
+            adminGalleryForm.reset();
+            if (galPreviewContainer) galPreviewContainer.style.display = 'none';
+            fetchAdminGallery();
+            fetchStats();
+          } else {
+            const data = await response.json();
+            if (feedback) {
+              feedback.className = 'settings-feedback error';
+              feedback.innerText = data.error || 'Failed to upload photo.';
+            }
+          }
+        } catch (err) {
+          if (feedback) {
+            feedback.className = 'settings-feedback error';
+            feedback.innerText = 'Connection error. Please try again.';
+          }
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      };
+
+      reader.readAsDataURL(file);
     });
   }
 

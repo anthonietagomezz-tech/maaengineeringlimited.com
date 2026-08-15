@@ -22,8 +22,15 @@ const io = socketIo(server, {
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'maa-engineering-gold-standard-secret-key-2026';
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'public', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -257,6 +264,16 @@ app.get('/api/chats/:id/messages', async (req, res) => {
   }
 });
 
+// Get All Gallery Items (Public)
+app.get('/api/gallery', async (req, res) => {
+  try {
+    const items = await db.getGalleryItems();
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve gallery items.' });
+  }
+});
+
 // Admin Login
 app.post('/api/admin/login', async (req, res) => {
   const { username, password } = req.body;
@@ -478,6 +495,66 @@ app.post('/api/admin/change-password', authenticateAdmin, async (req, res) => {
     res.json({ success: true, message: 'Password changed successfully.' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to change password.' });
+  }
+});
+
+// Add Gallery Photo (Admin)
+app.post('/api/admin/gallery', authenticateAdmin, async (req, res) => {
+  const { title, category, caption, imageBase64, filename, imageUrl: providedUrl } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ error: 'Photo title is required.' });
+  }
+
+  try {
+    let finalImageUrl = providedUrl;
+
+    if (imageBase64) {
+      const matches = imageBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+      const base64Data = matches ? matches[2] : imageBase64;
+      const cleanFilename = (filename || 'photo.jpg').replace(/[^a-zA-Z0-9._-]/g, '_');
+      const uniqueFilename = `${Date.now()}_${cleanFilename}`;
+      const filePath = path.join(uploadsDir, uniqueFilename);
+
+      fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+      finalImageUrl = `/uploads/${uniqueFilename}`;
+    }
+
+    if (!finalImageUrl) {
+      return res.status(400).json({ error: 'An image file or URL is required.' });
+    }
+
+    const item = await db.addGalleryItem(title, category, finalImageUrl, caption);
+    io.emit('galleryUpdate');
+
+    res.status(201).json({ success: true, item });
+  } catch (error) {
+    console.error('Error adding gallery item:', error);
+    res.status(500).json({ error: 'Failed to upload photo.' });
+  }
+});
+
+// Delete Gallery Photo (Admin)
+app.delete('/api/admin/gallery/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const deleted = await db.deleteGalleryItem(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ error: 'Gallery photo not found.' });
+    }
+
+    if (deleted.image_url && deleted.image_url.startsWith('/uploads/')) {
+      const fileBasename = path.basename(deleted.image_url);
+      const targetPath = path.join(uploadsDir, fileBasename);
+      if (fs.existsSync(targetPath)) {
+        fs.unlinkSync(targetPath);
+      }
+    }
+
+    io.emit('galleryUpdate');
+    res.json({ success: true, message: 'Gallery photo deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting gallery item:', error);
+    res.status(500).json({ error: 'Failed to delete gallery photo.' });
   }
 });
 

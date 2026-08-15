@@ -79,6 +79,17 @@ class Database {
         );
       `);
 
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS gallery (
+          id VARCHAR(50) PRIMARY KEY,
+          title VARCHAR(255) NOT NULL,
+          category VARCHAR(100) DEFAULT 'General',
+          image_url TEXT NOT NULL,
+          caption TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
       // 2. Populate Default Admin User if empty
       const adminCheck = await pool.query('SELECT * FROM admin_users LIMIT 1');
       if (adminCheck.rows.length === 0) {
@@ -99,6 +110,24 @@ class Database {
       } else if (settingsCheck.rows[0].whatsapp_number === '233596324748') {
         console.log('[PG DB] Seed: Updating default WhatsApp number to 233204437721...');
         await pool.query(`UPDATE settings SET whatsapp_number = $1`, ['233204437721']);
+      }
+
+      // 4. Seed Initial Gallery Photos if empty
+      const galleryCheck = await pool.query('SELECT * FROM gallery LIMIT 1');
+      if (galleryCheck.rows.length === 0) {
+        console.log('[PG DB] Seed: Adding initial gallery project photos...');
+        const initialPhotos = [
+          { id: 'gal_1', title: 'Pre-Engineered Warehouse Structure', category: 'PEB & Warehouses', imageUrl: '/service-peb.jpg', caption: 'Heavy-duty steel warehouse frame with insulated roofing.' },
+          { id: 'gal_2', title: 'Custom Stainless Steel Pressure Vessel', category: 'Steel Fabrication', imageUrl: '/CUSTOMMETALWORK.jpg', caption: 'Custom MS/SS vessel fabrication and structural assembly.' },
+          { id: 'gal_3', title: 'Industrial Roof Truss Erection', category: 'Roofing & Trusses', imageUrl: '/TRUSSESROOFING.jpg', caption: 'Wide-span angular steel roof trusses for industrial complex.' },
+          { id: 'gal_4', title: 'Heavy Steel Building Skeleton', category: 'Heavy Structures', imageUrl: '/ConcreteMixerMachines.jpg', caption: 'Multi-level portal framing and structural steel erection.' }
+        ];
+        for (const p of initialPhotos) {
+          await pool.query(`
+            INSERT INTO gallery (id, title, category, image_url, caption)
+            VALUES ($1, $2, $3, $4, $5)
+          `, [p.id, p.title, p.category, p.imageUrl, p.caption]);
+        }
       }
       console.log('PostgreSQL database initialization completed successfully.');
     } catch (error) {
@@ -322,13 +351,58 @@ class Database {
     const unreadRes = await pool.query("SELECT COUNT(*) FROM messages WHERE status = 'unread'");
     const repliedRes = await pool.query("SELECT COUNT(*) FROM messages WHERE status = 'replied'");
     const activeChatsRes = await pool.query("SELECT COUNT(*) FROM chats WHERE status = 'active'");
+    const totalGalleryRes = await pool.query('SELECT COUNT(*) FROM gallery');
 
     return {
       totalInquiries: parseInt(totalRes.rows[0].count) || 0,
       unreadInquiries: parseInt(unreadRes.rows[0].count) || 0,
       repliedInquiries: parseInt(repliedRes.rows[0].count) || 0,
-      activeChats: parseInt(activeChatsRes.rows[0].count) || 0
+      activeChats: parseInt(activeChatsRes.rows[0].count) || 0,
+      totalGalleryPhotos: parseInt(totalGalleryRes.rows[0].count) || 0
     };
+  }
+
+  // --- GALLERY METHODS ---
+  async getGalleryItems() {
+    const res = await pool.query('SELECT * FROM gallery ORDER BY created_at DESC');
+    return res.rows.map(row => ({
+      id: row.id,
+      title: row.title,
+      category: row.category,
+      imageUrl: row.image_url,
+      caption: row.caption,
+      createdAt: new Date(row.created_at).getTime()
+    }));
+  }
+
+  async getGalleryItemById(id) {
+    const res = await pool.query('SELECT * FROM gallery WHERE id = $1', [id]);
+    if (res.rows.length === 0) return null;
+    const row = res.rows[0];
+    return {
+      id: row.id,
+      title: row.title,
+      category: row.category,
+      imageUrl: row.image_url,
+      caption: row.caption,
+      createdAt: new Date(row.created_at).getTime()
+    };
+  }
+
+  async addGalleryItem(title, category, imageUrl, caption) {
+    const id = 'gal_' + Math.random().toString(36).substr(2, 9);
+    await pool.query(`
+      INSERT INTO gallery (id, title, category, image_url, caption)
+      VALUES ($1, $2, $3, $4, $5)
+    `, [id, title, category || 'General', imageUrl, caption || '']);
+
+    return this.getGalleryItemById(id);
+  }
+
+  async deleteGalleryItem(id) {
+    const res = await pool.query('DELETE FROM gallery WHERE id = $1 RETURNING *', [id]);
+    if (res.rows.length === 0) return null;
+    return res.rows[0];
   }
 
   async getSettings() {
