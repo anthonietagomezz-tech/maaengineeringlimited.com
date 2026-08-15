@@ -124,8 +124,7 @@ function generateBrandedEmailHtml({ title, kicker = '', recipientName = '', cont
               <div style="color: #c89b55; font-weight: 700; letter-spacing: 1px; margin-bottom: 6px; font-size: 13px;">MAA ENGINEERING LIMITED</div>
               <div style="margin-bottom: 10px; color: #a0a6ac; font-size: 11.5px;">Structural Engineering · Steel Fabrication · Industrial Solutions</div>
               <div style="margin-bottom: 12px; font-size: 12px;">
-                <a href="https://maaengineeringlimited.com" style="color: #c89b55; text-decoration: none; font-weight: 600; margin: 0 8px;">Website</a> ·
-                <a href="https://maaengineeringlimited.com/admin" style="color: #c89b55; text-decoration: none; font-weight: 600; margin: 0 8px;">Admin Portal</a>
+                <a href="https://maaengineeringlimited.com" style="color: #c89b55; text-decoration: none; font-weight: 600; margin: 0 8px;">Visit Website</a>
               </div>
               <div style="font-size: 11px; color: #6c757d;">© ${new Date().getFullYear()} Maa Engineering Limited. All rights reserved.</div>
             </td>
