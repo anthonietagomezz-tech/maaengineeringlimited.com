@@ -1670,3 +1670,176 @@ button {
   transform: translateX(1px);
 }
 
+/* ==========================================================================
+   8. COMPREHENSIVE RESPONSIVE MOBILE & TABLET STYLING
+   ========================================================================== */
+
+/* Mobile Menu Toggle & Overlay */
+.mobile-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-right: 12px;
+}
+
+.mobile-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 19, 21, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 990;
+}
+
+.mobile-back-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-right: 8px;
+}
+
+.mobile-back-btn:hover {
+  background: #f1f5f9;
+}
+
+/* TABLETS AND PHONES (<= 1024px) */
+@media (max-width: 1024px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px;
+  }
+}
+
+/* SMARTPHONES AND COMPACT SCREENS (<= 860px) */
+@media (max-width: 860px) {
+  .dashboard-container {
+    flex-direction: column;
+    position: relative;
+  }
+
+  .mobile-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* OFF-CANVAS SIDEBAR DRAWER */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .mobile-sidebar-overlay.active {
+    display: block;
+  }
+
+  .top-header {
+    padding: 0 16px;
+    height: 64px;
+  }
+
+  .header-title h1 {
+    font-size: 17px;
+  }
+
+  .header-title p {
+    font-size: 11px;
+  }
+
+  .panel-content {
+    padding: 16px;
+  }
+
+  .dashboard-split,
+  .settings-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+
+  /* DUAL-PANE CHAT RESPONSIVE TOGGLING */
+  .inbox-container,
+  .chatdesk-container {
+    grid-template-columns: 1fr !important;
+    height: calc(100vh - 64px - 32px);
+    position: relative;
+  }
+
+  .inbox-list-pane,
+  .chatdesk-sessions {
+    width: 100%;
+    height: 100%;
+  }
+
+  .inbox-detail-pane,
+  .chatdesk-stream {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* When an inquiry/chat is active on mobile, hide the list and show detail pane */
+  .inbox-container.mobile-detail-active .inbox-list-pane,
+  .chatdesk-container.mobile-detail-active .chatdesk-sessions {
+    display: none !important;
+  }
+
+  .inbox-container.mobile-detail-active .inbox-detail-pane,
+  .chatdesk-container.mobile-detail-active .chatdesk-stream {
+    display: flex !important;
+  }
+
+  .mobile-back-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* SMALL PHONES (<= 520px) */
+@media (max-width: 520px) {
+  .metrics-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .detail-meta {
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 11px;
+  }
+
+  .chat-avatar-circle {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .wa-bubble-row {
+    max-width: 88% !important;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea,
+  .stream-input-bar input,
+  .reply-composer-bar textarea {
+    font-size: 16px !important;
+  }
+}
+

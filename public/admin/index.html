@@ -95,11 +95,15 @@
       
       <!-- TOP HEADER BAR -->
       <header class="top-header">
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
         <div class="header-title">
           <h1 id="tab-title-display">Overview Dashboard</h1>
           <p id="tab-subtitle-display">Welcome back. Platform performance and active communications.</p>
         </div>
       </header>
+      <div class="mobile-sidebar-overlay" id="mobile-sidebar-overlay"></div>
 
       <!-- PANELS BODY -->
       <div class="panel-content">
@@ -222,6 +226,9 @@
               <div id="inquiry-detail-content" style="display: none; flex-direction: column; height: 100%;">
                 <!-- TELEGRAM/WHATSAPP HEADER BAR -->
                 <div class="detail-header telegram-chat-header">
+                  <button class="mobile-back-btn" id="inquiry-mobile-back" title="Back to Inquiries">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
                   <div class="chat-header-user">
                     <div class="chat-avatar-circle" id="inquiry-avatar-circle">M</div>
                     <div class="detail-title">
@@ -293,6 +300,9 @@
 
               <div id="chat-active-box" style="display: none; flex-direction: column; height: 100%;">
                 <div class="stream-header telegram-chat-header">
+                  <button class="mobile-back-btn" id="chat-mobile-back" title="Back to Chat List">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
                   <div class="chat-header-user">
                     <div class="chat-avatar-circle" id="active-chat-avatar">U</div>
                     <div>

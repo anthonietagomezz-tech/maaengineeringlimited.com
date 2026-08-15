@@ -269,6 +269,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 4000);
   }
 
+  // Mobile Off-Canvas Drawer & Overlay Toggle
+  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+  const sidebarEl = document.querySelector('.sidebar');
+  const mobileOverlayEl = document.getElementById('mobile-sidebar-overlay');
+  
+  function closeMobileSidebar() {
+    if (sidebarEl) sidebarEl.classList.remove('mobile-open');
+    if (mobileOverlayEl) mobileOverlayEl.classList.remove('active');
+  }
+
+  if (mobileMenuToggle && sidebarEl) {
+    mobileMenuToggle.addEventListener('click', () => {
+      sidebarEl.classList.toggle('mobile-open');
+      if (mobileOverlayEl) mobileOverlayEl.classList.toggle('active');
+    });
+  }
+
+  if (mobileOverlayEl) {
+    mobileOverlayEl.addEventListener('click', closeMobileSidebar);
+  }
+
+  // Mobile Back Buttons
+  const inquiryMobileBack = document.getElementById('inquiry-mobile-back');
+  const chatMobileBack = document.getElementById('chat-mobile-back');
+  const inquiryContainer = document.querySelector('.inbox-container');
+  const chatdeskContainer = document.querySelector('.chatdesk-container');
+
+  if (inquiryMobileBack && inquiryContainer) {
+    inquiryMobileBack.addEventListener('click', () => {
+      inquiryContainer.classList.remove('mobile-detail-active');
+    });
+  }
+
+  if (chatMobileBack && chatdeskContainer) {
+    chatMobileBack.addEventListener('click', () => {
+      chatdeskContainer.classList.remove('mobile-detail-active');
+    });
+  }
+
   // Sidebar Tab Routing Handler
   function setupTabNavigation() {
     navItems.forEach(item => {
@@ -281,6 +320,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function loadTab(tab) {
+    closeMobileSidebar();
+
     // 1. Toggle Active Link Style
     navItems.forEach(i => i.classList.remove('active'));
     document.querySelector(`.nav-item[data-tab="${tab}"]`).classList.add('active');
@@ -544,6 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function selectInquiry(id) {
     selectedInquiryId = id;
+    if (inquiryContainer) inquiryContainer.classList.add('mobile-detail-active');
     
     // Highlight list row
     document.querySelectorAll('.inquiry-row').forEach(row => {
@@ -817,6 +859,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function selectChat(chatId) {
     selectedChatId = chatId;
+    if (chatdeskContainer) chatdeskContainer.classList.add('mobile-detail-active');
 
     // Join room in socket
     setupSocket();
