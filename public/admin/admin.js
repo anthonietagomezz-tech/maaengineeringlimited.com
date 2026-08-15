@@ -581,13 +581,6 @@ document.addEventListener('DOMContentLoaded', () => {
         badge.className = `status-tag ${msg.status}`;
         badge.innerText = msg.status;
 
-        // WhatsApp direct link
-        const cleanPhone = (msg.phone || '').replace(/\D/g, '');
-        const waNum = cleanPhone || targetWaNumber;
-        const waText = encodeURIComponent(`Hello ${msg.name}, thank you for reaching out to Maa Engineering Limited regarding your enquiry for ${msg.projectType || 'our services'}.`);
-        const waLink = document.getElementById('wa-direct-inquiry-btn');
-        if (waLink) waLink.href = `https://wa.me/${waNum}?text=${waText}`;
-
         // Date pill
         const dateStr = new Date(msg.createdAt).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
         const datePill = document.getElementById('view-inquiry-date-pill');
