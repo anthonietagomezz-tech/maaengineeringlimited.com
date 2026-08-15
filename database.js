@@ -114,7 +114,7 @@ class Database {
         await pool.query(`
           INSERT INTO settings (whatsapp_number, smtp_enabled, smtp_host, smtp_port, smtp_user, smtp_pass, sender_email)
           VALUES ($1, $2, $3, $4, $5, $6, $7)
-        `, ['233204437721', true, 'smtp.gmail.com', '587', 'shashikumarnishad@maaengineeringlimited.com', 'rgufrqenrralshrr', 'shashikumarnishad@maaengineeringlimited.com']);
+        `, ['233204437721', true, 'smtp.gmail.com', '587', 'shashikumarnishad@maaengineeringlimited.com', 'nuhoixxoqtabjcho', 'shashikumarnishad@maaengineeringlimited.com']);
       } else {
         await pool.query(`
           UPDATE settings SET 
@@ -125,7 +125,7 @@ class Database {
             smtp_user = $5,
             smtp_pass = $6,
             sender_email = $7
-        `, ['233204437721', true, 'smtp.gmail.com', '587', 'shashikumarnishad@maaengineeringlimited.com', 'rgufrqenrralshrr', 'shashikumarnishad@maaengineeringlimited.com']);
+        `, ['233204437721', true, 'smtp.gmail.com', '587', 'shashikumarnishad@maaengineeringlimited.com', 'nuhoixxoqtabjcho', 'shashikumarnishad@maaengineeringlimited.com']);
       }
 
       // 4. Seed Initial Gallery Photos if empty
