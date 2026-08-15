@@ -340,13 +340,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Sidebar Tab Routing Handler
+  // Sidebar Tab Routing & Clickable KPI Cards Handler
   function setupTabNavigation() {
-    navItems.forEach(item => {
+    document.querySelectorAll('[data-tab]').forEach(item => {
       item.addEventListener('click', (e) => {
-        e.preventDefault();
         const tab = item.getAttribute('data-tab');
-        loadTab(tab);
+        if (tab) {
+          loadTab(tab);
+        }
       });
     });
   }

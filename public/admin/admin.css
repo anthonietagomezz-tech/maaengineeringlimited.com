@@ -510,14 +510,16 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
-.metric-card:hover {
-  transform: translateY(-2px);
+.metric-card:hover,
+.clickable-kpi:hover {
+  transform: translateY(-4px);
   border-color: var(--color-gold);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
 }
 
 .metric-info label {
