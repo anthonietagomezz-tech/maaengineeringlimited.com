@@ -175,14 +175,26 @@ async function sendMailHelper(to, subject, textBody, htmlBody = null, settingsOv
       fromHeader = `"Maa Engineering Limited" <${customSender}>`;
     }
 
-    const info = await transporter.sendMail({
+    let replyToAddress = null;
+    if (customSender) {
+      const match = customSender.match(/<([^>]+)>/);
+      replyToAddress = match ? match[1] : customSender;
+    }
+
+    const mailOptions = {
       from: fromHeader,
       to,
       subject,
       text: textBody,
       html: htmlBody || textBody.replace(/\n/g, '<br>'),
       attachments
-    });
+    };
+
+    if (replyToAddress) {
+      mailOptions.replyTo = replyToAddress;
+    }
+
+    const info = await transporter.sendMail(mailOptions);
 
     console.log('[SMTP SUCCESS] Email sent to %s (Message ID: %s)', to, info.messageId);
     return { mock: false, sent: true, messageId: info.messageId };
