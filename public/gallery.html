@@ -9,17 +9,21 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Floating Live Chat & WhatsApp Widget Stylesheet -->
+  <link rel="stylesheet" href="/chat-widget.css">
   
   <style>
     :root {
-      --bg-dark: #111315;
-      --bg-card: #181b1e;
+      --bg-main: #ffffff;
+      --bg-section: #f8fafc;
+      --bg-card: #ffffff;
       --accent: #c89b55;
-      --accent-hover: #dbac64;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-color: #2a2e33;
+      --accent-hover: #b8860b;
+      --text-main: #111315;
+      --text-muted: #475569;
+      --border-color: #e2e8f0;
     }
 
     * {
@@ -30,7 +34,7 @@
 
     body {
       font-family: 'DM Sans', sans-serif;
-      background-color: var(--bg-dark);
+      background-color: var(--bg-main);
       color: var(--text-main);
       line-height: 1.6;
       min-height: 100vh;
@@ -43,9 +47,10 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: rgba(17, 19, 21, 0.92);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
     }
 
     .container {
@@ -66,7 +71,7 @@
       align-items: center;
       gap: 12px;
       text-decoration: none;
-      color: #fff;
+      color: var(--text-main);
       font-family: 'Outfit', sans-serif;
       font-weight: 800;
       font-size: 16px;
@@ -89,8 +94,8 @@
     .nav-links a {
       color: var(--text-muted);
       text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 14.5px;
+      font-weight: 600;
       transition: color 0.2s;
     }
 
@@ -115,22 +120,23 @@
 
     .btn-quote:hover {
       background: var(--accent-hover);
+      color: #ffffff !important;
     }
 
     .mobile-menu-btn {
       display: none;
       background: transparent;
       border: none;
-      color: #fff;
+      color: var(--text-main);
       font-size: 24px;
       cursor: pointer;
     }
 
     /* HERO BANNER */
     .gallery-hero {
-      padding: 70px 0 40px;
+      padding: 70px 0 45px;
       text-align: center;
-      background: radial-gradient(circle at top, rgba(200, 155, 85, 0.08) 0%, transparent 60%);
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
       border-bottom: 1px solid var(--border-color);
     }
 
@@ -150,6 +156,7 @@
       font-weight: 800;
       margin-bottom: 16px;
       line-height: 1.2;
+      color: var(--text-main);
     }
 
     .gallery-hero h1 span {
@@ -166,6 +173,7 @@
     /* FILTER BAR */
     .filter-section {
       padding: 30px 0;
+      background: #ffffff;
     }
 
     .filter-tabs {
@@ -177,10 +185,10 @@
     }
 
     .filter-tab {
-      background: #181b1e;
+      background: #f1f5f9;
       border: 1px solid var(--border-color);
       color: var(--text-muted);
-      padding: 10px 20px;
+      padding: 10px 22px;
       border-radius: 30px;
       font-size: 13.5px;
       font-weight: 600;
@@ -191,18 +199,20 @@
     .filter-tab:hover {
       border-color: var(--accent);
       color: var(--text-main);
+      background: #ffffff;
     }
 
     .filter-tab.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #111315;
+      background: var(--text-main);
+      border-color: var(--text-main);
+      color: #ffffff;
     }
 
     /* GALLERY GRID */
     .gallery-section {
       padding-bottom: 80px;
       flex: 1;
+      background: #ffffff;
     }
 
     .gallery-grid {
@@ -217,6 +227,7 @@
       border-radius: 12px;
       overflow: hidden;
       cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
       display: flex;
       flex-direction: column;
@@ -225,7 +236,7 @@
     .gallery-card:hover {
       transform: translateY(-6px);
       border-color: var(--accent);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1);
     }
 
     .gallery-media {
@@ -233,7 +244,7 @@
       width: 100%;
       height: 240px;
       overflow: hidden;
-      background: #0d0e10;
+      background: #f1f5f9;
     }
 
     .gallery-media img {
@@ -251,18 +262,18 @@
       position: absolute;
       top: 14px;
       left: 14px;
-      background: rgba(17, 19, 21, 0.85);
-      border: 1px solid rgba(200, 155, 85, 0.4);
+      background: rgba(17, 19, 21, 0.9);
+      border: 1px solid rgba(200, 155, 85, 0.5);
       color: var(--accent);
       font-size: 11px;
       font-weight: 700;
-      padding: 4px 10px;
+      padding: 4px 12px;
       border-radius: 20px;
       backdrop-filter: blur(4px);
     }
 
     .gallery-body {
-      padding: 20px;
+      padding: 22px;
       display: flex;
       flex-direction: column;
       flex: 1;
@@ -272,7 +283,7 @@
       font-family: 'Outfit', sans-serif;
       font-size: 18px;
       font-weight: 700;
-      color: #fff;
+      color: var(--text-main);
       margin-bottom: 8px;
     }
 
@@ -286,7 +297,7 @@
       grid-column: 1 / -1;
       text-align: center;
       padding: 60px 20px;
-      background: var(--bg-card);
+      background: var(--bg-section);
       border: 1px dashed var(--border-color);
       border-radius: 12px;
       color: var(--text-muted);
@@ -298,7 +309,7 @@
       position: fixed;
       inset: 0;
       z-index: 10000;
-      background: rgba(10, 11, 13, 0.95);
+      background: rgba(15, 23, 42, 0.9);
       backdrop-filter: blur(8px);
       align-items: center;
       justify-content: center;
@@ -307,15 +318,16 @@
 
     .lightbox-content {
       position: relative;
-      max-width: 1000px;
+      max-width: 960px;
       width: 100%;
-      background: #181b1e;
+      background: #ffffff;
       border: 1px solid var(--border-color);
       border-radius: 16px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       max-height: 90vh;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
     }
 
     .lightbox-close {
@@ -323,7 +335,7 @@
       top: 16px;
       right: 16px;
       z-index: 10;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(17, 19, 21, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #fff;
       width: 36px;
@@ -345,7 +357,7 @@
     .lightbox-img-wrap {
       width: 100%;
       max-height: 65vh;
-      background: #000;
+      background: #0f172a;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -359,7 +371,8 @@
     }
 
     .lightbox-info {
-      padding: 20px 24px;
+      padding: 22px 26px;
+      background: #ffffff;
       border-top: 1px solid var(--border-color);
     }
 
@@ -367,7 +380,7 @@
       font-family: 'Outfit', sans-serif;
       font-size: 20px;
       font-weight: 700;
-      color: #fff;
+      color: var(--text-main);
       margin-bottom: 6px;
     }
 
@@ -378,7 +391,7 @@
 
     /* FOOTER */
     footer {
-      background: #0b0c0e;
+      background: var(--bg-section);
       border-top: 1px solid var(--border-color);
       padding: 40px 0;
       margin-top: auto;
@@ -393,7 +406,7 @@
     }
 
     .footer-copy {
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--text-muted);
     }
 
@@ -408,8 +421,9 @@
         top: 80px;
         left: 0;
         right: 0;
-        background: #111315;
+        background: #ffffff;
         border-bottom: 1px solid var(--border-color);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
         flex-direction: column;
         padding: 20px;
         gap: 16px;
@@ -512,7 +526,7 @@
         <div class="footer-copy">
           © 2026 Maa Engineering Limited. All rights reserved. Ghana · Structural Engineering & Metal Works
         </div>
-        <div style="display: flex; gap: 20px; font-size: 13px;">
+        <div style="display: flex; gap: 20px; font-size: 13.5px;">
           <a href="/#about" style="color: var(--text-muted); text-decoration: none;">About</a>
           <a href="/#services" style="color: var(--text-muted); text-decoration: none;">Services</a>
           <a href="/#projects" style="color: var(--text-muted); text-decoration: none;">Projects</a>
@@ -523,7 +537,7 @@
     </div>
   </footer>
 
-  <!-- Socket.io & Floating Widget -->
+  <!-- Socket.io & Floating Chat Widget Scripts -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/chat-widget.js"></script>
