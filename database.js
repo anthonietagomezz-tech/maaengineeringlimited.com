@@ -107,17 +107,25 @@ class Database {
         await pool.query('INSERT INTO admin_users (username, password_hash) VALUES ($1, $2)', ['admin', passwordHash]);
       }
 
-      // 3. Populate Default Settings if empty or update if it was old default
+      // 3. Populate or Update Settings with Working Gmail SMTP Credentials
       const settingsCheck = await pool.query('SELECT * FROM settings LIMIT 1');
       if (settingsCheck.rows.length === 0) {
         console.log('[PG DB] Seed: Inserting default configurations...');
         await pool.query(`
           INSERT INTO settings (whatsapp_number, smtp_enabled, smtp_host, smtp_port, smtp_user, smtp_pass, sender_email)
           VALUES ($1, $2, $3, $4, $5, $6, $7)
-        `, ['233204437721', false, 'smtp.mailtrap.io', '2525', '', '', 'info@maaengineeringlimited.com']);
-      } else if (settingsCheck.rows[0].whatsapp_number === '233596324748') {
-        console.log('[PG DB] Seed: Updating default WhatsApp number to 233204437721...');
-        await pool.query(`UPDATE settings SET whatsapp_number = $1`, ['233204437721']);
+        `, ['233204437721', true, 'smtp.gmail.com', '587', 'shashikumarnishad@maaengineeringlimited.com', 'rgufrqenrralshrr', 'shashikumarnishad@maaengineeringlimited.com']);
+      } else {
+        await pool.query(`
+          UPDATE settings SET 
+            whatsapp_number = $1,
+            smtp_enabled = $2,
+            smtp_host = $3,
+            smtp_port = $4,
+            smtp_user = $5,
+            smtp_pass = $6,
+            sender_email = $7
+        `, ['233204437721', true, 'smtp.gmail.com', '587', 'shashikumarnishad@maaengineeringlimited.com', 'rgufrqenrralshrr', 'shashikumarnishad@maaengineeringlimited.com']);
       }
 
       // 4. Seed Initial Gallery Photos if empty
