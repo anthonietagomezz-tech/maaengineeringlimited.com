@@ -98,13 +98,19 @@ class Database {
         ALTER TABLE gallery ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP;
       `);
 
-      // 2. Populate Default Admin User if empty
+      // 2. Populate or Update Administrator Credentials
+      const newAdminUsername = 'admin@maaengineeringlimited.com';
+      const newAdminPass = 'ShashLina_biz@2026';
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(newAdminPass, salt);
+
       const adminCheck = await pool.query('SELECT * FROM admin_users LIMIT 1');
       if (adminCheck.rows.length === 0) {
-        console.log('[PG DB] Seed: Adding default administrator credentials...');
-        const salt = await bcrypt.genSalt(10);
-        const passwordHash = await bcrypt.hash('admin123', salt);
-        await pool.query('INSERT INTO admin_users (username, password_hash) VALUES ($1, $2)', ['admin', passwordHash]);
+        console.log('[PG DB] Seed: Adding administrator credentials...');
+        await pool.query('INSERT INTO admin_users (username, password_hash) VALUES ($1, $2)', [newAdminUsername, passwordHash]);
+      } else {
+        console.log('[PG DB] Seed: Updating administrator credentials...');
+        await pool.query('UPDATE admin_users SET username = $1, password_hash = $2 WHERE id = $3', [newAdminUsername, passwordHash, adminCheck.rows[0].id]);
       }
 
       // 3. Populate or Update Settings with Working Gmail SMTP Credentials
