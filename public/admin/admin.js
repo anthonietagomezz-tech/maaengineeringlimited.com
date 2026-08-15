@@ -1273,12 +1273,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   let adminGalleryItems = [];
 
-  async function fetchAdminGallery() {
+  let lastAdminGalHash = '';
+
+  async function fetchAdminGallery(forceRender = false) {
     try {
       const response = await fetch('/api/gallery');
       if (response.ok) {
-        adminGalleryItems = await response.json();
-        renderAdminGalleryGrid();
+        const items = await response.json();
+        const currentHash = JSON.stringify(items);
+        if (forceRender || currentHash !== lastAdminGalHash) {
+          adminGalleryItems = items;
+          lastAdminGalHash = currentHash;
+          renderAdminGalleryGrid();
+        }
       }
     } catch (err) {
       console.error('Failed to load admin gallery items:', err);

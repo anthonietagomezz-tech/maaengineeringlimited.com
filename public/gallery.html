@@ -554,13 +554,22 @@
     const lightboxCaption = document.getElementById('lightbox-caption');
     const lightboxClose = document.getElementById('lightbox-close');
 
-    // Fetch Gallery Photos from Server API
-    async function loadGallery() {
+    let lastGalleryHash = '';
+
+    // Fetch Gallery Photos from Server API (Anti-flicker diff check)
+    async function loadGallery(forceRender = false) {
       try {
         const response = await fetch('/api/gallery');
         if (response.ok) {
-          allGalleryItems = await response.json();
-          renderGrid();
+          const items = await response.json();
+          const currentHash = JSON.stringify(items);
+          
+          // Only update DOM if gallery items changed or if tab was clicked
+          if (forceRender || currentHash !== lastGalleryHash) {
+            allGalleryItems = items;
+            lastGalleryHash = currentHash;
+            renderGrid();
+          }
         }
       } catch (err) {
         console.error('Failed to load gallery items:', err);
