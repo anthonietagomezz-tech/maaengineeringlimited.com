@@ -227,12 +227,15 @@
     }
   }
 
+  const doubleCheckSvg = `<span style="color:#53bdeb; margin-left:3px; display:inline-flex; align-items:center;"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17l-4.24-4.24-1.41 1.41 5.66 5.66L23.66 7l-1.42-1.41zM.41 13.34l5.66 5.66 1.41-1.41-5.66-5.66-1.41 1.41z"/></svg></span>`;
+
   // Append a message to the thread
   function appendMessage(sender, text, timestamp) {
-    const timeStr = timestamp ? new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+    const timeStr = timestamp ? new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const msgDiv = document.createElement('div');
     msgDiv.classList.add('maa-msg', sender);
-    msgDiv.innerHTML = `${escapeHtml(text)}<div class="maa-msg-time">${timeStr}</div>`;
+    const checkmark = sender === 'user' ? doubleCheckSvg : '';
+    msgDiv.innerHTML = `${escapeHtml(text)}<div class="maa-msg-time"><span>${timeStr}</span>${checkmark}</div>`;
     
     // Remove typing indicator if exists before appending message
     hideTypingIndicator();

@@ -118,6 +118,27 @@ document.addEventListener('DOMContentLoaded', () => {
     loadTab('overview');
   }
 
+  // Icons & Sound Helper
+  const doubleCheckIcon = `<span class="wa-double-check"><svg viewBox="0 0 24 24"><path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17l-4.24-4.24-1.41 1.41 5.66 5.66L23.66 7l-1.42-1.41zM.41 13.34l5.66 5.66 1.41-1.41-5.66-5.66-1.41 1.41z"/></svg></span>`;
+  let targetWaNumber = '233204437721';
+
+  function playChimeSound() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.3);
+    } catch (e) {}
+  }
+
   // Socket.io operators configuration
   function setupSocket() {
     if (socket) return;
@@ -137,21 +158,37 @@ document.addEventListener('DOMContentLoaded', () => {
     // Real-time notification: New Inquiry
     socket.on('newInquiry', (newMsg) => {
       fetchStats();
+      playChimeSound();
       if (document.getElementById('panel-overview').classList.contains('active')) {
         refreshOverviewLists();
       }
       if (document.getElementById('panel-inquiries').classList.contains('active')) {
         fetchInquiries();
       }
-      
-      // Flash temporary browser notification if allowed, or system alert
       showToastAlert(`New project enquiry received from ${newMsg.name}!`);
+    });
+
+    // Real-time notification: New Inquiry Reply
+    socket.on('newInquiryReply', ({ messageId, reply }) => {
+      fetchStats();
+      if (selectedInquiryId && selectedInquiryId === messageId) {
+        appendInquiryReplyBubble(reply);
+      }
+      if (document.getElementById('panel-inquiries').classList.contains('active')) {
+        fetchInquiries();
+      }
+    });
+
+    socket.on('inquiryListUpdate', () => {
+      fetchInquiries();
+      fetchStats();
     });
 
     // Real-time notification: New Chat Session
     socket.on('newChatSession', (newSession) => {
       fetchStats();
       refreshChatList();
+      playChimeSound();
       showToastAlert(`New live chat started by ${newSession.name}!`);
     });
 
@@ -165,20 +202,22 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('newMessage', (msg) => {
       if (selectedChatId && msg.chatId === selectedChatId) {
         appendChatMsg(msg.sender, msg.text, msg.timestamp);
-        // Automatically mark chat messages as read/refresh lists
+        if (msg.sender === 'user') playChimeSound();
         scrollChatThread();
       }
     });
 
     socket.on('typing', ({ chatId, sender }) => {
       if (selectedChatId && chatId === selectedChatId && sender === 'user') {
-        document.getElementById('visitor-typing-alert').style.display = 'block';
+        const el = document.getElementById('visitor-typing-alert');
+        if (el) el.style.display = 'flex';
       }
     });
 
     socket.on('stopTyping', ({ chatId, sender }) => {
       if (selectedChatId && chatId === selectedChatId && sender === 'user') {
-        document.getElementById('visitor-typing-alert').style.display = 'none';
+        const el = document.getElementById('visitor-typing-alert');
+        if (el) el.style.display = 'none';
       }
     });
 
@@ -525,64 +564,110 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Show viewer content
-        document.querySelector('.detail-empty-state').style.display = 'none';
+        const emptyState = document.querySelector('#inquiry-detail-pane .detail-empty-state');
+        if (emptyState) emptyState.style.display = 'none';
         inquiryDetailContent.style.display = 'flex';
 
-        // Render fields
+        // Avatar & Header fields
+        const initial = msg.name ? msg.name.charAt(0).toUpperCase() : 'M';
+        document.getElementById('inquiry-avatar-circle').innerText = initial;
         document.getElementById('view-inquiry-name').innerText = msg.name;
         document.getElementById('view-inquiry-email').innerText = msg.email;
         document.getElementById('view-inquiry-phone').innerText = msg.phone || 'No phone provided';
-        document.getElementById('view-inquiry-project').innerText = msg.projectType;
-        document.getElementById('view-inquiry-message').innerText = msg.message;
-        document.getElementById('view-inquiry-date').innerText = `Received: ${new Date(msg.createdAt).toLocaleString()}`;
+        document.getElementById('view-inquiry-project').innerText = msg.projectType || 'General Enquiry';
         
         // Status badge
         const badge = document.getElementById('view-inquiry-status-badge');
-        badge.className = `badge ${msg.status}`;
+        badge.className = `status-tag ${msg.status}`;
         badge.innerText = msg.status;
 
-        // Populate replies timeline log
-        const timelineList = document.getElementById('timeline-list');
-        const timelineWrapper = document.getElementById('view-inquiry-timeline');
-        
-        timelineList.innerHTML = '';
+        // WhatsApp direct link
+        const cleanPhone = (msg.phone || '').replace(/\D/g, '');
+        const waNum = cleanPhone || targetWaNumber;
+        const waText = encodeURIComponent(`Hello ${msg.name}, thank you for reaching out to Maa Engineering Limited regarding your enquiry for ${msg.projectType || 'our services'}.`);
+        const waLink = document.getElementById('wa-direct-inquiry-btn');
+        if (waLink) waLink.href = `https://wa.me/${waNum}?text=${waText}`;
+
+        // Date pill
+        const dateStr = new Date(msg.createdAt).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        const datePill = document.getElementById('view-inquiry-date-pill');
+        if (datePill) datePill.innerText = dateStr;
+
+        // Populate WhatsApp Thread
+        const thread = document.getElementById('inquiry-messages-thread');
+        thread.innerHTML = '';
+
+        // Initial Client Inquiry Bubble
+        const reqTime = new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const clientBubble = document.createElement('div');
+        clientBubble.className = 'wa-bubble-row user incoming';
+        clientBubble.innerHTML = `
+          <div class="wa-bubble">
+            <div class="wa-sender-tag">${escapeHtml(msg.name)}</div>
+            <div>${escapeHtml(msg.message).replace(/\n/g, '<br>')}</div>
+            <div class="wa-bubble-footer">${reqTime}</div>
+          </div>
+        `;
+        thread.appendChild(clientBubble);
+
+        // Render replies timeline as WhatsApp outgoing bubbles
         if (msg.replies && msg.replies.length > 0) {
-          timelineWrapper.style.display = 'block';
           msg.replies.forEach(rep => {
-            const tRow = document.createElement('div');
-            tRow.className = 'timeline-item';
-            tRow.innerHTML = `
-              <div class="timeline-item-meta">Response Sent: ${new Date(rep.sentAt).toLocaleString()}</div>
-              <div class="timeline-item-body">${rep.message.replace(/\n/g, '<br>')}</div>
-            `;
-            timelineList.appendChild(tRow);
+            appendInquiryReplyBubble(rep);
           });
-        } else {
-          timelineWrapper.style.display = 'none';
         }
 
-        // Reset reply editor input
-        document.getElementById('reply-text-input').value = `Hi ${msg.name.split(' ')[0]},\n\nThank you for contacting Maa Engineering Limited.\n\n[Type response body here]\n\nBest regards,\nShashi Kumar Nishad\nMaa Engineering Limited`;
+        // Scroll stream container to bottom
+        const streamContainer = document.getElementById('inquiry-stream-container');
+        if (streamContainer) streamContainer.scrollTop = streamContainer.scrollHeight;
+
+        // Reset reply input
+        const replyInput = document.getElementById('reply-text-input');
+        replyInput.value = '';
+        replyInput.placeholder = `Type an instant reply to ${msg.name}... (press Enter to send)`;
       }
     } catch (err) {
       console.error('Failed to load inquiry details:', err);
     }
   }
 
+  function appendInquiryReplyBubble(rep) {
+    const thread = document.getElementById('inquiry-messages-thread');
+    if (!thread) return;
+    const timeStr = rep.sentAt ? new Date(rep.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const replyBubble = document.createElement('div');
+    replyBubble.className = 'wa-bubble-row admin outgoing';
+    replyBubble.innerHTML = `
+      <div class="wa-bubble">
+        <div class="wa-sender-tag">Engineering Support</div>
+        <div>${escapeHtml(rep.message || rep.reply_text || '').replace(/\n/g, '<br>')}</div>
+        <div class="wa-bubble-footer">
+          <span>${timeStr}</span>
+          ${doubleCheckIcon}
+        </div>
+      </div>
+    `;
+    thread.appendChild(replyBubble);
+    const streamContainer = document.getElementById('inquiry-stream-container');
+    if (streamContainer) streamContainer.scrollTop = streamContainer.scrollHeight;
+  }
+
   function resetInquiryViewer() {
     selectedInquiryId = null;
-    document.querySelector('.detail-empty-state').style.display = 'flex';
+    const emptyState = document.querySelector('#inquiry-detail-pane .detail-empty-state');
+    if (emptyState) emptyState.style.display = 'flex';
     inquiryDetailContent.style.display = 'none';
   }
 
   // Reply Submit Action
   const sendReplyBtn = document.getElementById('send-reply-submit');
-  sendReplyBtn.addEventListener('click', async () => {
-    const text = document.getElementById('reply-text-input').value.trim();
-    if (text === '') return;
+  const replyInputText = document.getElementById('reply-text-input');
+
+  async function submitInquiryReply() {
+    const text = replyInputText.value.trim();
+    if (text === '' || !selectedInquiryId) return;
 
     sendReplyBtn.disabled = true;
-    sendReplyBtn.innerText = 'Sending Reply...';
 
     try {
       const response = await fetch(`/api/admin/messages/${selectedInquiryId}/reply`, {
@@ -592,27 +677,34 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (response.ok) {
-        // Success
+        const resData = await response.json();
         sendReplyBtn.disabled = false;
-        sendReplyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Send Response`;
+        replyInputText.value = '';
         
-        // Refresh details (reloads timeline reply logs)
-        selectInquiry(selectedInquiryId);
-        // Refresh inbox stats
+        // Append bubble locally & refresh list status
+        if (resData.reply) appendInquiryReplyBubble(resData.reply);
         fetchInquiries();
         fetchStats();
       } else {
         const errorData = await response.json();
         alert(errorData.error || 'Failed to send reply.');
         sendReplyBtn.disabled = false;
-        sendReplyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Send Response`;
       }
     } catch (err) {
-      alert('Error sending reply server connection failed.');
+      alert('Error sending reply: server connection failed.');
       sendReplyBtn.disabled = false;
-      sendReplyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Send Response`;
     }
-  });
+  }
+
+  sendReplyBtn.addEventListener('click', submitInquiryReply);
+  if (replyInputText) {
+    replyInputText.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        submitInquiryReply();
+      }
+    });
+  }
 
   // Delete Action
   const deleteBtn = document.getElementById('delete-inquiry-btn');
@@ -643,12 +735,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // 5. TAB LOGIC: LIVE CHAT
   // ==========================================
   const chatSessionsList = document.getElementById('chat-sessions-list');
+  const chatSearchInput = document.getElementById('chat-search');
   const chatViewerPane = document.getElementById('chat-viewer-pane');
   const chatActiveBox = document.getElementById('chat-active-box');
   const chatMessagesContainer = document.getElementById('chat-viewer-messages');
   const chatOpInput = document.getElementById('chat-operator-input');
   const chatOpSendBtn = document.getElementById('chat-operator-send');
   const closeChatSessionBtn = document.getElementById('close-chat-session-btn');
+
+  if (chatSearchInput) {
+    chatSearchInput.addEventListener('input', renderChatSessions);
+  }
 
   async function refreshChatList() {
     try {
@@ -660,9 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedChatId) {
           const activeSession = chatSessions.find(c => c.id === selectedChatId);
           if (activeSession) {
-            // Keep status update
             document.getElementById('active-chat-visitor-name').innerText = activeSession.name;
-            document.getElementById('active-chat-visitor-email').innerText = activeSession.email || 'No email provided';
             
             if (activeSession.status === 'closed') {
               chatOpInput.disabled = true;
@@ -681,13 +776,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderChatSessions() {
     chatSessionsList.innerHTML = '';
+    const searchVal = chatSearchInput ? chatSearchInput.value.toLowerCase().trim() : '';
+
+    const filtered = chatSessions.filter(c => {
+      return c.name.toLowerCase().includes(searchVal) ||
+             (c.email && c.email.toLowerCase().includes(searchVal));
+    });
     
-    if (chatSessions.length === 0) {
+    if (filtered.length === 0) {
       chatSessionsList.innerHTML = '<div style="padding:40px 20px; text-align:center; color:var(--text-muted); font-size:13px;">No chat sessions available.</div>';
       return;
     }
 
-    chatSessions.forEach(c => {
+    filtered.forEach(c => {
       const activeClass = c.id === selectedChatId ? 'active' : '';
       const date = new Date(c.lastMessageAt);
       const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -734,12 +835,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const chat = chatSessions.find(c => c.id === chatId);
       if (!chat) return;
 
-      document.querySelector('.chat-empty-state').style.display = 'none';
+      const emptyState = document.querySelector('#chat-viewer-pane .chat-empty-state');
+      if (emptyState) emptyState.style.display = 'none';
       chatActiveBox.style.display = 'flex';
 
-      // Header info
+      // Header info & Avatar
+      const initial = chat.name ? chat.name.charAt(0).toUpperCase() : 'U';
+      document.getElementById('active-chat-avatar').innerText = initial;
       document.getElementById('active-chat-visitor-name').innerText = chat.name;
-      document.getElementById('active-chat-visitor-email').innerText = chat.email || 'No email provided';
+      document.getElementById('active-chat-visitor-email').innerText = (chat.email ? chat.email + ' · ' : '') + 'Online · Ready to chat';
+
+      // WhatsApp Direct Link
+      const waText = encodeURIComponent(`Hello ${chat.name}, following up on your live chat session with Maa Engineering Limited.`);
+      const waBtn = document.getElementById('wa-direct-chat-btn');
+      if (waBtn) waBtn.href = `https://wa.me/${targetWaNumber}?text=${waText}`;
 
       if (chat.status === 'closed') {
         chatOpInput.disabled = true;
@@ -768,10 +877,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function appendChatMsg(sender, text, timestamp) {
-    const timeStr = timestamp ? new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+    const timeStr = timestamp ? new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const isUser = sender === 'user';
     const msgDiv = document.createElement('div');
-    msgDiv.className = `op-msg ${sender}`;
-    msgDiv.innerHTML = `${escapeHtml(text)}<div class="op-msg-time">${timeStr}</div>`;
+    msgDiv.className = `wa-bubble-row ${isUser ? 'user incoming' : 'admin outgoing'}`;
+
+    if (isUser) {
+      msgDiv.innerHTML = `
+        <div class="wa-bubble">
+          <div class="wa-sender-tag">Visitor</div>
+          <div>${escapeHtml(text).replace(/\n/g, '<br>')}</div>
+          <div class="wa-bubble-footer">${timeStr}</div>
+        </div>
+      `;
+    } else {
+      msgDiv.innerHTML = `
+        <div class="wa-bubble">
+          <div class="wa-sender-tag">Operator</div>
+          <div>${escapeHtml(text).replace(/\n/g, '<br>')}</div>
+          <div class="wa-bubble-footer">
+            <span>${timeStr}</span>
+            ${doubleCheckIcon}
+          </div>
+        </div>
+      `;
+    }
+
     chatMessagesContainer.appendChild(msgDiv);
     scrollChatThread();
   }

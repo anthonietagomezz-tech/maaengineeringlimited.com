@@ -184,7 +184,7 @@
         </section>
 
         <!-- ==================================================================
-             PANEL 2: INQUIRIES INBOX
+             PANEL 2: INQUIRIES INBOX (WHATSAPP & TELEGRAM CONVERSATION VIEW)
              ================================================================== -->
         <section class="panel tab-panel" id="panel-inquiries">
           <div class="inbox-container">
@@ -193,10 +193,10 @@
               <div class="inbox-header">
                 <div class="search-box">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  <input type="text" id="inquiry-search" placeholder="Search by name, email, project...">
+                  <input type="text" id="inquiry-search" placeholder="Search inquiries by name, email, project...">
                 </div>
                 <div class="inbox-filters" style="margin-top:12px;">
-                  <select id="inquiry-filter-status" style="width:100%; padding:8px 12px; background:var(--bg-input); border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); font-size:12px; font-weight:600;">
+                  <select id="inquiry-filter-status">
                     <option value="all">All Inquiries</option>
                     <option value="unread">Unread Only</option>
                     <option value="read">Read Only</option>
@@ -209,49 +209,58 @@
               </div>
             </div>
 
-            <!-- RIGHT DETAIL PANE -->
+            <!-- RIGHT DETAIL PANE (TELEGRAM / WHATSAPP CHAT THREAD) -->
             <div class="inbox-detail-pane" id="inquiry-detail-pane">
-              <div class="detail-empty-state" style="display: flex; flex-direction:column; align-items:center; justify-content:center; height: 100%; color: var(--text-muted); font-size: 14px; gap:8px;">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                <span>Select an inquiry from the inbox list to view details and compose a response.</span>
+              <div class="detail-empty-state">
+                <div class="chat-placeholder-icon">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <h3>Inquiry Conversation Thread</h3>
+                <span>Select an inquiry from the left list to view messages and instant reply.</span>
               </div>
 
               <div id="inquiry-detail-content" style="display: none; flex-direction: column; height: 100%;">
-                <div class="detail-header">
-                  <div class="detail-title">
-                    <h2 id="view-inquiry-name">Sender Name</h2>
-                    <div class="detail-meta">
-                      <span id="view-inquiry-email">email@example.com</span>
-                      <span>·</span>
-                      <span id="view-inquiry-phone">+233 00 000 0000</span>
-                      <span>·</span>
-                      <span id="view-inquiry-project" style="color: var(--color-gold); font-weight: 700;">Project Interest</span>
+                <!-- TELEGRAM/WHATSAPP HEADER BAR -->
+                <div class="detail-header telegram-chat-header">
+                  <div class="chat-header-user">
+                    <div class="chat-avatar-circle" id="inquiry-avatar-circle">M</div>
+                    <div class="detail-title">
+                      <h2 id="view-inquiry-name">Sender Name</h2>
+                      <div class="detail-meta">
+                        <span id="view-inquiry-email">email@example.com</span>
+                        <span>·</span>
+                        <span id="view-inquiry-phone">+233 00 000 0000</span>
+                        <span>·</span>
+                        <span id="view-inquiry-project" class="project-tag-pill">Project Interest</span>
+                      </div>
                     </div>
                   </div>
-                  <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="chat-header-actions">
                     <span class="status-tag" id="view-inquiry-status-badge">unread</span>
-                    <button id="delete-inquiry-btn" style="background: var(--color-danger-bg); border: 1px solid rgba(217, 48, 37, 0.4); color: #ff6b6b; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Delete</button>
+                    <a id="wa-direct-inquiry-btn" target="_blank" href="#" class="btn-whatsapp-direct" title="Chat directly on WhatsApp">
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12.004 2c-5.51 0-9.996 4.486-9.996 9.998 0 1.761.459 3.475 1.33 4.986L2 22l5.163-1.354c1.47.801 3.125 1.222 4.837 1.222 5.51 0 9.996-4.485 9.996-9.997S17.514 2 12.004 2zm0 18.286c-1.503 0-2.98-.387-4.275-1.12l-.307-.174-3.181.834.848-3.097-.191-.304c-.799-1.272-1.22-2.738-1.22-4.254 0-4.563 3.713-8.275 8.327-8.275 4.613 0 8.328 3.712 8.328 8.275 0 4.564-3.715 8.275-8.329 8.275z"/></svg>
+                      <span>WhatsApp Client</span>
+                    </a>
+                    <button id="delete-inquiry-btn" class="btn-delete-action">Delete</button>
                   </div>
                 </div>
 
-                <div class="detail-body">
-                  <div class="detail-content-card" id="view-inquiry-message">Inquiry content text goes here...</div>
-                  <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 20px;" id="view-inquiry-date">Received: Date Time</div>
-
-                  <!-- REPLIES TIMELINE -->
-                  <div id="view-inquiry-timeline" style="display: none;">
-                    <div class="timeline-title">Response History Timeline</div>
-                    <div class="reply-history-list" id="timeline-list"></div>
+                <!-- CHAT STREAM WALLPAPER CONTAINER -->
+                <div class="detail-body telegram-wallpaper" id="inquiry-stream-container">
+                  <div class="chat-date-divider" id="view-inquiry-date-pill">Today</div>
+                  <div class="whatsapp-chat-thread" id="inquiry-messages-thread">
+                    <!-- Populated dynamically with incoming inquiry bubble & outgoing reply bubbles -->
                   </div>
+                </div>
 
-                  <!-- REPLY EDITOR -->
-                  <div class="reply-composer">
-                    <h4>Compose Email Reply</h4>
-                    <textarea id="reply-text-input" placeholder="Type your response here..."></textarea>
-                    <div class="reply-actions" style="display: flex; justify-content: flex-end;">
-                      <button id="send-reply-submit" class="btn-primary">Send Response →</button>
-                    </div>
+                <!-- WHATSAPP/TELEGRAM INPUT COMPOSER BAR -->
+                <div class="reply-composer-bar">
+                  <div class="composer-input-wrapper">
+                    <textarea id="reply-text-input" placeholder="Type an instant reply to the client..." rows="1"></textarea>
                   </div>
+                  <button id="send-reply-submit" class="btn-chat-send" title="Send Response">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -259,14 +268,17 @@
         </section>
 
         <!-- ==================================================================
-             PANEL 3: LIVE CHAT DESK
+             PANEL 3: LIVE CHAT DESK (WHATSAPP & TELEGRAM REAL-TIME CHAT STREAM)
              ================================================================== -->
         <section class="panel tab-panel" id="panel-livechat">
           <div class="chatdesk-container">
             <!-- SESSIONS LIST -->
             <div class="chatdesk-sessions">
               <div class="inbox-header">
-                <h4 style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary);">Active Chat Conversations</h4>
+                <div class="search-box">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="chat-search" placeholder="Search live chats...">
+                </div>
               </div>
               <div class="inbox-items" id="chat-sessions-list">
                 <!-- Populated dynamically -->
@@ -275,31 +287,51 @@
 
             <!-- CHAT STREAM & INPUT -->
             <div class="chatdesk-stream" id="chat-viewer-pane">
-              <div class="chat-empty-state" style="display: flex; flex-direction:column; align-items:center; justify-content:center; height: 100%; color: var(--text-muted); font-size: 14px; gap:8px;">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                <span>Select an active chat session from the list to join the live conversation.</span>
+              <div class="chat-empty-state">
+                <div class="chat-placeholder-icon">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <h3>Live Chat Desk</h3>
+                <span>Select an active chat session to start instant messaging.</span>
               </div>
 
               <div id="chat-active-box" style="display: none; flex-direction: column; height: 100%;">
-                <div class="stream-header">
-                  <div>
-                    <h3 id="active-chat-visitor-name" style="font-size: 16px; font-weight: 800;">Visitor Name</h3>
-                    <p id="active-chat-visitor-email" style="font-size: 12px; color: var(--text-muted);">email@example.com</p>
+                <div class="stream-header telegram-chat-header">
+                  <div class="chat-header-user">
+                    <div class="chat-avatar-circle" id="active-chat-avatar">U</div>
+                    <div>
+                      <h3 id="active-chat-visitor-name">Visitor Name</h3>
+                      <div class="chat-status-line">
+                        <span class="online-indicator-dot"></span>
+                        <span id="active-chat-visitor-email">Online · Ready to chat</span>
+                      </div>
+                    </div>
                   </div>
-                  <button id="close-chat-session-btn" style="background: var(--color-danger-bg); border: 1px solid rgba(217, 48, 37, 0.4); color: #ff6b6b; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">End Chat Session</button>
+                  <div class="chat-header-actions">
+                    <a id="wa-direct-chat-btn" target="_blank" href="#" class="btn-whatsapp-direct" title="Continue conversation on WhatsApp">
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12.004 2c-5.51 0-9.996 4.486-9.996 9.998 0 1.761.459 3.475 1.33 4.986L2 22l5.163-1.354c1.47.801 3.125 1.222 4.837 1.222 5.51 0 9.996-4.485 9.996-9.997S17.514 2 12.004 2zm0 18.286c-1.503 0-2.98-.387-4.275-1.12l-.307-.174-3.181.834.848-3.097-.191-.304c-.799-1.272-1.22-2.738-1.22-4.254 0-4.563 3.713-8.275 8.327-8.275 4.613 0 8.328 3.712 8.328 8.275 0 4.564-3.715 8.275-8.329 8.275z"/></svg>
+                      <span>WhatsApp</span>
+                    </a>
+                    <button id="close-chat-session-btn" class="btn-danger-outline">End Session</button>
+                  </div>
                 </div>
 
-                <div class="stream-messages" id="chat-viewer-messages">
+                <div class="stream-messages telegram-wallpaper" id="chat-viewer-messages">
                   <!-- Chat messages populated dynamically -->
                 </div>
 
-                <div id="visitor-typing-alert" style="display: none; padding: 6px 24px; font-size: 11px; color: var(--color-gold); font-weight: 600; background: var(--bg-secondary);">
-                  Visitor is typing...
+                <div id="visitor-typing-alert" class="chat-typing-bar" style="display: none;">
+                  <div class="typing-wave">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <span>Visitor is typing...</span>
                 </div>
 
-                <div class="stream-input-bar">
-                  <input type="text" id="chat-operator-input" placeholder="Type a response to the visitor..." autocomplete="off">
-                  <button class="btn-primary" id="chat-operator-send">Send</button>
+                <div class="stream-input-bar whatsapp-style-input">
+                  <input type="text" id="chat-operator-input" placeholder="Type a message (press Enter to send)..." autocomplete="off">
+                  <button class="btn-chat-send" id="chat-operator-send" title="Send Message">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                  </button>
                 </div>
               </div>
             </div>

@@ -375,6 +375,10 @@ app.post('/api/admin/messages/:id/reply', authenticateAdmin, async (req, res) =>
     // Save reply to database
     const { reply } = await db.addReply(message.id, replyText);
 
+    // Broadcast real-time socket updates to all connected admin portals
+    io.emit('newInquiryReply', { messageId: message.id, reply });
+    io.emit('inquiryListUpdate');
+
     res.json({
       success: true,
       message: 'Reply sent successfully.',
@@ -394,6 +398,7 @@ app.delete('/api/admin/messages/:id', authenticateAdmin, async (req, res) => {
     if (!success) {
       return res.status(404).json({ error: 'Message not found.' });
     }
+    io.emit('inquiryListUpdate');
     res.json({ success: true, message: 'Message deleted successfully.' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete message.' });
