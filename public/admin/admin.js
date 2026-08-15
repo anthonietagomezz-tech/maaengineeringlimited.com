@@ -1366,6 +1366,11 @@ document.addEventListener('DOMContentLoaded', () => {
           });
 
           if (response.ok) {
+            const data = await response.json();
+            if (data.item) {
+              adminGalleryItems.unshift(data.item);
+              renderAdminGalleryGrid();
+            }
             if (feedback) {
               feedback.className = 'settings-feedback success';
               feedback.innerText = 'Gallery photo uploaded successfully!';
@@ -1396,6 +1401,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+
+  // Auto-refresh gallery list every 5 seconds if gallery tab is open
+  setInterval(() => {
+    const activeTab = document.querySelector('.nav-item.active');
+    if (activeTab && activeTab.getAttribute('data-tab') === 'gallery') {
+      fetchAdminGallery();
+    }
+  }, 5000);
 
   // RUN ON START
   checkAuth();

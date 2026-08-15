@@ -631,13 +631,20 @@
       }
     });
 
-    // Socket.io Real-time Auto Refresh
+    // Real-time Auto Refresh (Socket.io + Auto-Polling for Serverless Deployments)
     const socket = typeof io !== 'undefined' ? io() : null;
     if (socket) {
       socket.on('galleryUpdate', () => {
         loadGallery();
       });
     }
+
+    // Auto Refresh every 4 seconds & when switching back to tab
+    setInterval(loadGallery, 4000);
+    window.addEventListener('focus', loadGallery);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) loadGallery();
+    });
 
     function escapeHtml(str) {
       if (!str) return '';
