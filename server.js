@@ -547,10 +547,14 @@ app.delete('/api/admin/gallery/:id', authenticateAdmin, async (req, res) => {
     }
 
     if (deleted.image_url && deleted.image_url.startsWith('/uploads/')) {
-      const fileBasename = path.basename(deleted.image_url);
-      const targetPath = path.join(uploadsDir, fileBasename);
-      if (fs.existsSync(targetPath)) {
-        fs.unlinkSync(targetPath);
+      try {
+        const fileBasename = path.basename(deleted.image_url);
+        const targetPath = path.join(uploadsDir, fileBasename);
+        if (fs.existsSync(targetPath)) {
+          fs.unlinkSync(targetPath);
+        }
+      } catch (fileErr) {
+        console.warn('Could not remove file from disk:', fileErr);
       }
     }
 

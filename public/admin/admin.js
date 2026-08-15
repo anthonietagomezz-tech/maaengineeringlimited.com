@@ -1293,7 +1293,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchAdminGallery();
         fetchStats();
       } else {
-        alert('Failed to delete gallery photo.');
+        const data = await response.json();
+        alert(data.error || 'Failed to delete gallery photo.');
       }
     } catch (err) {
       console.error('Error deleting photo:', err);
