@@ -22,10 +22,19 @@ const io = socketIo(server, {
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'maa-engineering-gold-standard-secret-key-2026';
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+// Ensure uploads directory exists (safely for serverless environments)
+let uploadsDir = path.join(__dirname, 'public', 'uploads');
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (e) {
+  uploadsDir = path.join('/tmp', 'uploads');
+  try {
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+  } catch (err) {}
 }
 
 // Middleware
@@ -515,14 +524,19 @@ app.post('/api/admin/gallery', authenticateAdmin, async (req, res) => {
     let finalImageUrl = providedUrl;
 
     if (imageBase64) {
-      const matches = imageBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-      const base64Data = matches ? matches[2] : imageBase64;
-      const cleanFilename = (filename || 'photo.jpg').replace(/[^a-zA-Z0-9._-]/g, '_');
-      const uniqueFilename = `${Date.now()}_${cleanFilename}`;
-      const filePath = path.join(uploadsDir, uniqueFilename);
+      try {
+        const matches = imageBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+        const base64Data = matches ? matches[2] : imageBase64;
+        const cleanFilename = (filename || 'photo.jpg').replace(/[^a-zA-Z0-9._-]/g, '_');
+        const uniqueFilename = `${Date.now()}_${cleanFilename}`;
+        const filePath = path.join(uploadsDir, uniqueFilename);
 
-      fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
-      finalImageUrl = `/uploads/${uniqueFilename}`;
+        fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+        finalImageUrl = `/uploads/${uniqueFilename}`;
+      } catch (writeErr) {
+        console.warn('File write error (read-only filesystem?), falling back to inline Base64:', writeErr);
+        finalImageUrl = imageBase64;
+      }
     }
 
     if (!finalImageUrl) {
@@ -668,15 +682,33 @@ io.on('connection', (socket) => {
   });
 });
 
-// Initialize DB and start server
-db.init().then(() => {
-  server.listen(PORT, () => {
-    console.log(`===============================================`);
-    console.log(` Maa Engineering Limited Backend is Running!`);
-    console.log(` URL: http://localhost:${PORT}`);
-    console.log(` Admin Panel: http://localhost:${PORT}/admin`);
-    console.log(`===============================================`);
+// Safe DB Initialization Helper
+let dbInitPromise = null;
+const ensureDbInitialized = () => {
+  if (!dbInitPromise) {
+    dbInitPromise = db.init().catch(err => {
+      console.error('Database initialization error:', err);
+      dbInitPromise = null;
+    });
+  }
+  return dbInitPromise;
+};
+
+// Auto-trigger DB initialization
+ensureDbInitialized();
+
+// Start HTTP Server when running directly locally
+if (require.main === module || !process.env.VERCEL) {
+  ensureDbInitialized().then(() => {
+    server.listen(PORT, () => {
+      console.log(`===============================================`);
+      console.log(` Maa Engineering Limited Backend is Running!`);
+      console.log(` URL: http://localhost:${PORT}`);
+      console.log(` Admin Panel: http://localhost:${PORT}/admin`);
+      console.log(`===============================================`);
+    });
   });
-}).catch(err => {
-  console.error('Failed to initialize database. Server shutting down.', err);
-});
+}
+
+// Export app for Vercel Serverless Function Handler
+module.exports = app;
