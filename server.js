@@ -514,30 +514,15 @@ app.post('/api/admin/change-password', authenticateAdmin, async (req, res) => {
 
 // Add Gallery Photo (Admin)
 app.post('/api/admin/gallery', authenticateAdmin, async (req, res) => {
-  const { title, category, caption, imageBase64, filename, imageUrl: providedUrl } = req.body;
+  const { title, category, caption, imageBase64, imageUrl: providedUrl } = req.body;
 
   if (!title) {
     return res.status(400).json({ error: 'Photo title is required.' });
   }
 
   try {
-    let finalImageUrl = providedUrl;
-
-    if (imageBase64) {
-      try {
-        const matches = imageBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-        const base64Data = matches ? matches[2] : imageBase64;
-        const cleanFilename = (filename || 'photo.jpg').replace(/[^a-zA-Z0-9._-]/g, '_');
-        const uniqueFilename = `${Date.now()}_${cleanFilename}`;
-        const filePath = path.join(uploadsDir, uniqueFilename);
-
-        fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
-        finalImageUrl = `/uploads/${uniqueFilename}`;
-      } catch (writeErr) {
-        console.warn('File write error (read-only filesystem?), falling back to inline Base64:', writeErr);
-        finalImageUrl = imageBase64;
-      }
-    }
+    // Store imageBase64 Data URL directly in database so it never breaks on Vercel serverless environment
+    let finalImageUrl = imageBase64 || providedUrl;
 
     if (!finalImageUrl) {
       return res.status(400).json({ error: 'An image file or URL is required.' });

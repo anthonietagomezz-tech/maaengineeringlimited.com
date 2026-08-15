@@ -113,6 +113,7 @@ class Database {
       }
 
       // 4. Seed Initial Gallery Photos if empty
+      await pool.query("DELETE FROM gallery WHERE image_url LIKE '/uploads/%'");
       const galleryCheck = await pool.query('SELECT * FROM gallery LIMIT 1');
       if (galleryCheck.rows.length === 0) {
         console.log('[PG DB] Seed: Adding initial gallery project photos...');
