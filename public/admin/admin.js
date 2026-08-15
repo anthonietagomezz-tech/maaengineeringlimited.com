@@ -27,18 +27,43 @@ document.addEventListener('DOMContentLoaded', () => {
   const badgeInquiries = document.getElementById('badge-inquiries');
   const badgeChats = document.getElementById('badge-chats');
 
+  // Helper for authenticated API requests
+  function fetchWithAuth(url, options = {}) {
+    const token = localStorage.getItem('admin_token');
+    const headers = options.headers || {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    return fetch(url, {
+      ...options,
+      headers
+    });
+  }
+
   // 1. INITIAL AUTHENTICATION CHECK
   async function checkAuth() {
+    const savedToken = localStorage.getItem('admin_token');
+    const savedUsername = localStorage.getItem('admin_username');
+
     try {
-      const response = await fetch('/api/admin/check-auth');
+      const response = await fetchWithAuth('/api/admin/check-auth');
       if (response.ok) {
         const data = await response.json();
-        showDashboard(data.username);
+        if (data.username) localStorage.setItem('admin_username', data.username);
+        showDashboard(data.username || savedUsername);
+      } else {
+        if (savedToken && savedUsername) {
+          showDashboard(savedUsername);
+        } else {
+          showLogin();
+        }
+      }
+    } catch (err) {
+      if (savedToken && savedUsername) {
+        showDashboard(savedUsername);
       } else {
         showLogin();
       }
-    } catch (err) {
-      showLogin();
     }
   }
 
@@ -73,6 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (response.ok) {
         const data = await response.json();
+        if (data.token) {
+          localStorage.setItem('admin_token', data.token);
+          localStorage.setItem('admin_username', username);
+        }
         showDashboard(username);
         loginForm.reset();
       } else {
@@ -89,14 +118,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Handle Logout
   logoutTrigger.addEventListener('click', async () => {
     try {
-      await fetch('/api/admin/logout', { method: 'POST' });
+      await fetchWithAuth('/api/admin/logout', { method: 'POST' });
+    } catch (err) {
+      console.error('Logout failed:', err);
+    } finally {
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_username');
       if (socket) {
         socket.disconnect();
         socket = null;
       }
       showLogin();
-    } catch (err) {
-      console.error('Logout failed:', err);
     }
   });
 
@@ -369,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Fetch Dashboard Stats Counts
   async function fetchStats() {
     try {
-      const response = await fetch('/api/admin/stats');
+      const response = await fetchWithAuth('/api/admin/stats');
       if (response.ok) {
         stats = await response.json();
         
@@ -414,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       // 1. Fetch Inquiries
-      const resMsg = await fetch('/api/admin/messages');
+      const resMsg = await fetchWithAuth('/api/admin/messages');
       const messages = await resMsg.json();
       
       inquiriesContainer.innerHTML = '';
@@ -453,7 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // 2. Fetch Active Chats
-      const resChats = await fetch('/api/admin/chats');
+      const resChats = await fetchWithAuth('/api/admin/chats');
       const chats = await resChats.json();
 
       chatsContainer.innerHTML = '';
@@ -513,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function fetchInquiries() {
     try {
-      const response = await fetch('/api/admin/messages');
+      const response = await fetchWithAuth('/api/admin/messages');
       if (response.ok) {
         inquiries = await response.json();
         renderInquiryList();
@@ -604,7 +636,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       // Get full details (also triggers status updated to "read" if unread)
-      const response = await fetch(`/api/admin/messages/${id}`);
+      const response = await fetchWithAuth(`/api/admin/messages/${id}`);
       if (response.ok) {
         const msg = await response.json();
         
@@ -715,7 +747,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sendReplyBtn.disabled = true;
 
     try {
-      const response = await fetch(`/api/admin/messages/${selectedInquiryId}/reply`, {
+      const response = await fetchWithAuth(`/api/admin/messages/${selectedInquiryId}/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ replyText: text })
@@ -758,7 +790,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (confirm('Are you sure you want to permanently delete this project inquiry?')) {
       try {
-        const response = await fetch(`/api/admin/messages/${selectedInquiryId}`, {
+        const response = await fetchWithAuth(`/api/admin/messages/${selectedInquiryId}`, {
           method: 'DELETE'
         });
 
@@ -794,7 +826,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function refreshChatList() {
     try {
-      const response = await fetch('/api/admin/chats');
+      const response = await fetchWithAuth('/api/admin/chats');
       if (response.ok) {
         chatSessions = await response.json();
         renderChatSessions();
@@ -907,7 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Fetch messages history
-      const response = await fetch(`/api/admin/chats/${chatId}/messages`);
+      const response = await fetchWithAuth(`/api/admin/chats/${chatId}/messages`);
       if (response.ok) {
         const messages = await response.json();
         chatMessagesContainer.innerHTML = '';
@@ -1026,7 +1058,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (confirm('Are you sure you want to end this live chat session?')) {
       try {
-        const response = await fetch(`/api/admin/chats/${selectedChatId}/close`, {
+        const response = await fetchWithAuth(`/api/admin/chats/${selectedChatId}/close`, {
           method: 'POST'
         });
 
@@ -1068,7 +1100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function fetchSettings() {
     try {
-      const response = await fetch('/api/admin/settings');
+      const response = await fetchWithAuth('/api/admin/settings');
       if (response.ok) {
         const settings = await response.json();
         
@@ -1126,7 +1158,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const response = await fetch('/api/admin/change-password', {
+      const response = await fetchWithAuth('/api/admin/change-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentPassword, newPassword })
@@ -1163,7 +1195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const response = await fetch('/api/admin/settings', {
+      const response = await fetchWithAuth('/api/admin/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ whatsappNumber })
@@ -1201,7 +1233,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       try {
-        const response = await fetch('/api/admin/settings', {
+        const response = await fetchWithAuth('/api/admin/settings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1287,7 +1319,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.deleteGalleryPhoto = async function(id) {
     if (!confirm('Are you sure you want to delete this gallery photo from the website?')) return;
     try {
-      const response = await fetch(`/api/admin/gallery/${id}`, { method: 'DELETE' });
+      const response = await fetchWithAuth(`/api/admin/gallery/${id}`, { method: 'DELETE' });
       if (response.ok) {
         showToastAlert('Gallery photo deleted successfully.');
         fetchAdminGallery();
@@ -1353,7 +1385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const imageBase64 = event.target.result;
 
         try {
-          const response = await fetch('/api/admin/gallery', {
+          const response = await fetchWithAuth('/api/admin/gallery', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

@@ -310,10 +310,12 @@ app.post('/api/admin/login', async (req, res) => {
     // Generate JWT
     const token = jwt.sign({ username: admin.username }, JWT_SECRET, { expiresIn: '24h' });
 
-    // Set HTTP-only Cookie
+    // Set HTTP-only Cookie with explicit path and sameSite settings
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
+      sameSite: 'lax',
+      path: '/',
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 
